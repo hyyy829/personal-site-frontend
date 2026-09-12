@@ -1,0 +1,18 @@
+{
+  "title": "Blog",
+  "listTitle": "All posts",
+  "publishedAt": "Published at",
+  "views": "views",
+  "keywordPlaceholder": "Search title or summary",
+  "draft": "Draft",
+  "published": "Published",
+  "field": {
+    "title": "Title",
+    "summary": "Summary",
+    "content": "Content",
+    "coverUrl": "Cover URL",
+    "status": "Status"
+  },
+  "createdAt": "Created at",
+  "publishedAtColumn": "Published at"
+}

@@ -1,0 +1,50 @@
+/*
+ * 设计 Token（CONSTRAINTS.md 8.1.4）：颜色、字体、间距统一从这里取值。
+ * 深色模式通过 body[theme-mode='dark'] 切换，与 Semi Design 机制一致。
+ */
+:root {
+  --site-color-accent: #4c6ef5;
+  --site-color-accent-hover: #3b5bdb;
+  --site-color-text: #1c1f23;
+  --site-color-text-secondary: #5b6470;
+  --site-color-text-tertiary: #8a919c;
+  --site-color-border: #e4e7ec;
+  --site-color-bg: #ffffff;
+  --site-color-bg-secondary: #f7f8fa;
+  --site-color-bg-code: #f2f3f5;
+
+  --site-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --site-font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, Menlo, monospace;
+  --site-font-size-xs: 12px;
+  --site-font-size-sm: 13px;
+  --site-font-size-md: 15px;
+  --site-font-size-lg: 18px;
+  --site-font-size-xl: 24px;
+  --site-font-size-xxl: 34px;
+
+  --site-space-1: 4px;
+  --site-space-2: 8px;
+  --site-space-3: 12px;
+  --site-space-4: 16px;
+  --site-space-5: 24px;
+  --site-space-6: 32px;
+  --site-space-8: 48px;
+  --site-space-10: 72px;
+
+  --site-radius-sm: 4px;
+  --site-radius-md: 8px;
+  --site-content-width: 960px;
+}
+
+body[theme-mode='dark'] {
+  --site-color-accent: #748ffc;
+  --site-color-accent-hover: #91a7ff;
+  --site-color-text: #e8eaed;
+  --site-color-text-secondary: #a6adb8;
+  --site-color-text-tertiary: #6f7680;
+  --site-color-border: #33383f;
+  --site-color-bg: #111318;
+  --site-color-bg-secondary: #181b21;
+  --site-color-bg-code: #1f232a;
+}

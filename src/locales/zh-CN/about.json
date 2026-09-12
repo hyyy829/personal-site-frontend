@@ -1,0 +1,11 @@
+{
+  "title": "关于我",
+  "introTitle": "简介",
+  "intro": "我是一名开发者，这个网站是我的个人数字平台：记录技术、沉淀项目、持续演进。站点从第一天起按模块化设计，博客、项目、时间线、工具箱等模块会逐步加入，而不需要推翻现有架构。",
+  "stackTitle": "技术栈",
+  "stackBackend": "后端：Java 25、Spring Boot 3.5、Spring Cloud、Sa-Token、MyBatis-Plus、PostgreSQL、Redis",
+  "stackFrontend": "前端：React、TypeScript、Vite、Semi Design、Zustand",
+  "stackInfra": "基础设施：Nacos、Spring Cloud Gateway、Docker Compose",
+  "contactTitle": "联系方式",
+  "contact": "邮箱：admin@example.com（示例账号，可在后台修改资料）"
+}

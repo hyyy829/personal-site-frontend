@@ -1,0 +1,17 @@
+{
+  "heroTitle": "Hi, welcome to my personal site",
+  "heroSubtitle": "A place for my blog, projects and thoughts — a personal digital platform that keeps evolving.",
+  "ctaBlog": "Browse the blog",
+  "ctaAbout": "About me",
+  "latestPosts": "Latest posts",
+  "latestPostsSubtitle": "A few recently published articles",
+  "modules": "Site modules",
+  "modulesSubtitle": "Phase 1 is live, more modules are on the way",
+  "moduleBlog": "Blog",
+  "moduleBlogDesc": "Technical notes and thoughts, written in Markdown.",
+  "moduleProject": "Projects",
+  "moduleProjectDesc": "Personal open-source projects and practices.",
+  "moduleAdmin": "Admin",
+  "moduleAdminDesc": "Content, users and permissions with tenant isolation.",
+  "readMore": "Read more"
+}

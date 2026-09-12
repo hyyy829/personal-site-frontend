@@ -1,0 +1,18 @@
+{
+  "title": "博客",
+  "listTitle": "全部文章",
+  "publishedAt": "发布于",
+  "views": "次阅读",
+  "keywordPlaceholder": "搜索文章标题或摘要",
+  "draft": "草稿",
+  "published": "已发布",
+  "field": {
+    "title": "标题",
+    "summary": "摘要",
+    "content": "正文",
+    "coverUrl": "封面地址",
+    "status": "状态"
+  },
+  "createdAt": "创建时间",
+  "publishedAtColumn": "发布时间"
+}

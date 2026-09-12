@@ -1,0 +1,10 @@
+{
+  "dashboard": "Dashboard",
+  "blogManage": "Blog",
+  "projectManage": "Projects",
+  "userManage": "Users",
+  "roleManage": "Roles",
+  "permissionManage": "Permissions",
+  "tenantManage": "Tenants",
+  "systemManage": "System"
+}

@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back, {{name}}",
+    "blogTotal": "Total posts",
+    "postUnit": "",
+    "tenant": "Current tenant",
+    "quickLinks": "Quick links",
+    "goBlog": "Write a post",
+    "goSystem": "System settings"
+  },
+  "blog": {
+    "title": "Blog management",
+    "create": "New post",
+    "edit": "Edit post",
+    "deleteConfirm": "Delete this post?",
+    "saved": "Saved",
+    "actions": "Actions"
+  },
+  "tenantLabel": "Tenant",
+  "user": { "title": "User management" },
+  "role": { "title": "Role management" },
+  "permission": { "title": "Permission management" },
+  "system": { "title": "System settings" },
+  "project": { "title": "Project management" },
+  "tenantPage": { "title": "Tenant management" }
+}

@@ -1,0 +1,11 @@
+{
+  "title": "About me",
+  "introTitle": "Introduction",
+  "intro": "I am a developer, and this site is my personal digital platform: recording technology, accumulating projects and evolving over time. It is designed module-first from day one — blog, projects, timeline, toolbox and more will be added incrementally without rewrites.",
+  "stackTitle": "Tech stack",
+  "stackBackend": "Backend: Java 25, Spring Boot 3.5, Spring Cloud, Sa-Token, MyBatis-Plus, PostgreSQL, Redis",
+  "stackFrontend": "Frontend: React, TypeScript, Vite, Semi Design, Zustand",
+  "stackInfra": "Infrastructure: Nacos, Spring Cloud Gateway, Docker Compose",
+  "contactTitle": "Contact",
+  "contact": "Email: admin@example.com (sample account, update it in the admin panel)"
+}

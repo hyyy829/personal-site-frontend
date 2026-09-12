@@ -1,0 +1,10 @@
+{
+  "dashboard": "仪表盘",
+  "blogManage": "博客管理",
+  "projectManage": "项目管理",
+  "userManage": "用户管理",
+  "roleManage": "角色管理",
+  "permissionManage": "权限管理",
+  "tenantManage": "租户管理",
+  "systemManage": "系统设置"
+}

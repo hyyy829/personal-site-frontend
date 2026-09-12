@@ -1,0 +1,27 @@
+{
+  "dashboard": {
+    "title": "仪表盘",
+    "welcome": "欢迎回来，{{name}}",
+    "blogTotal": "博客总数",
+    "postUnit": "篇",
+    "tenant": "当前租户",
+    "quickLinks": "快捷入口",
+    "goBlog": "去写博客",
+    "goSystem": "系统管理"
+  },
+  "blog": {
+    "title": "博客管理",
+    "create": "新建文章",
+    "edit": "编辑文章",
+    "deleteConfirm": "确定删除这篇文章吗？",
+    "saved": "已保存",
+    "actions": "操作"
+  },
+  "tenantLabel": "租户",
+  "user": { "title": "用户管理" },
+  "role": { "title": "角色管理" },
+  "permission": { "title": "权限管理" },
+  "system": { "title": "系统设置" },
+  "project": { "title": "项目管理" },
+  "tenantPage": { "title": "租户管理" }
+}

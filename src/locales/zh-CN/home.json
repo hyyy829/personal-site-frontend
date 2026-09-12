@@ -1,0 +1,17 @@
+{
+  "heroTitle": "你好，欢迎来到我的个人站点",
+  "heroSubtitle": "这里记录我的博客、项目与思考，也是一个长期演进的个人数字平台。",
+  "ctaBlog": "浏览博客",
+  "ctaAbout": "了解我",
+  "latestPosts": "最新文章",
+  "latestPostsSubtitle": "最近发布的几篇博客",
+  "modules": "站点模块",
+  "modulesSubtitle": "第一阶段已上线，更多模块持续建设中",
+  "moduleBlog": "博客",
+  "moduleBlogDesc": "技术笔记与思考，支持 Markdown 写作与检索。",
+  "moduleProject": "项目展示",
+  "moduleProjectDesc": "个人开源项目与实践记录。",
+  "moduleAdmin": "后台管理",
+  "moduleAdminDesc": "内容、用户与权限管理，多租户数据隔离。",
+  "readMore": "阅读全文"
+}

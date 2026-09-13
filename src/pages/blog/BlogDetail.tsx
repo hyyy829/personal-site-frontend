@@ -5,6 +5,7 @@ import { Spin, Typography } from '@douyinfe/semi-ui';
 import { getPost } from '@/api/blog';
 import type { BlogDetail } from '@/types/blog';
 import MarkdownView from '@/components/blog/MarkdownView';
+import CommentSection from '@/components/blog/CommentSection';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 /** 博客详情：Markdown 渲染 */
@@ -62,6 +63,7 @@ export default function BlogDetailPage() {
         </div>
       </header>
       <MarkdownView content={post.content} />
+      <CommentSection postId={post.id} />
     </article>
   );
 }

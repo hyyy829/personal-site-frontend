@@ -1,0 +1,15 @@
+{
+  "title": "Comments",
+  "submit": "Submit",
+  "moderationNotice": "Comments appear after moderation.",
+  "approve": "Approve",
+  "reject": "Reject",
+  "deleteConfirm": "Delete this comment?",
+  "author": "Author",
+  "content": "Content",
+  "target": "Type",
+  "targetBlog": "Blog comment",
+  "targetGuestbook": "Guestbook",
+  "statusLabel": "Status",
+  "status": { "pending": "Pending", "approved": "Approved", "rejected": "Rejected" }
+}

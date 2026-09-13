@@ -1,0 +1,15 @@
+{
+  "title": "评论区",
+  "submit": "提交评论",
+  "moderationNotice": "评论提交后需审核通过才会展示。",
+  "approve": "通过",
+  "reject": "驳回",
+  "deleteConfirm": "确定删除这条评论吗？",
+  "author": "作者",
+  "content": "内容",
+  "target": "类型",
+  "targetBlog": "博客评论",
+  "targetGuestbook": "留言",
+  "statusLabel": "状态",
+  "status": { "pending": "待审核", "approved": "已通过", "rejected": "已驳回" }
+}

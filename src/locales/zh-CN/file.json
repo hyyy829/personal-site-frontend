@@ -1,0 +1,9 @@
+{
+  "name": "文件名",
+  "contentType": "类型",
+  "size": "大小",
+  "upload": "上传文件",
+  "copyUrl": "复制链接",
+  "copied": "已复制链接",
+  "deleteConfirm": "确定删除这个文件吗？"
+}

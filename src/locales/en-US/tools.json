@@ -8,5 +8,6 @@
   "json": "JSON format",
   "base64": "Base64",
   "timestamp": "Timestamp",
+  "unixLabel": "Unix timestamp",
   "uuid": "UUID"
 }

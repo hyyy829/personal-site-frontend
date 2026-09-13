@@ -1,24 +1,4 @@
-/** 与后端 file / stats / log 模块对齐 */
-export interface FileManagement {
-  id: number;
-  fileId: string;
-  fileUrl: string;
-  fileName: string;
-  fileSize: number;
-  contentType: string;
-  createdAt: string;
-}
-
-export interface VisitSummary {
-  total: number;
-  today: number;
-}
-
-export interface TopPath {
-  path: string;
-  count: number;
-}
-
+/** 与后端 log 模块对齐 */
 export interface OperationLogManagement {
   id: number;
   userId: number | null;

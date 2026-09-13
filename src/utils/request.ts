@@ -1,11 +1,19 @@
 import axios, { AxiosError } from 'axios';
-import { Toast } from '@douyinfe/semi-ui';
+import { getMessage } from '@/utils/feedback';
+import i18next from '@/utils/i18n';
 import { getToken, clearToken } from '@/utils/token';
 
 interface ApiEnvelope {
   code?: number;
   message?: string;
   data?: unknown;
+}
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    /** 可选接口（如尚未上线或允许失败的调用）：失败时不弹全局提示 */
+    silent?: boolean;
+  }
 }
 
 /** 统一请求实例： baseURL 指向网关，R 信封在拦截器中解包 */
@@ -36,14 +44,18 @@ request.interceptors.response.use(
           window.location.assign('/login?expired=1');
         }
       }
-      Toast.error(envelope.message || 'Error');
+      if (!response.config.silent) {
+        getMessage().error(envelope.message || i18next.t('common.state.error'));
+      }
       return Promise.reject(new Error(envelope.message));
     }
     return response.data;
   },
   (error: AxiosError<ApiEnvelope>) => {
-    const message = error.response?.data?.message || error.message || 'Network error';
-    Toast.error(message);
+    // 只透出后端文案；axios 自身的英文提示（Network Error 等）不对用户展示
+    if (!error.config?.silent) {
+      getMessage().error(error.response?.data?.message || i18next.t('common.state.error'));
+    }
     return Promise.reject(error);
   },
 );

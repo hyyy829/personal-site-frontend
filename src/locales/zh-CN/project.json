@@ -12,6 +12,7 @@
     "repoUrl": "仓库地址",
     "demoUrl": "演示地址",
     "techStack": "技术栈（逗号分隔）",
+    "techStackPlaceholder": "多个技术用逗号分隔，例如 Java, React",
     "status": "状态",
     "sortOrder": "排序",
     "published": "公开展示"

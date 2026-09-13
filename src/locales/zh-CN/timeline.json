@@ -1,0 +1,9 @@
+{
+  "title": "标题",
+  "date": "日期",
+  "tag": "标签",
+  "content": "内容",
+  "create": "新建事件",
+  "edit": "编辑事件",
+  "deleteConfirm": "确定删除这条时间线吗？"
+}

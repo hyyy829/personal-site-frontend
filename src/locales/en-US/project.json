@@ -12,6 +12,7 @@
     "repoUrl": "Repository URL",
     "demoUrl": "Demo URL",
     "techStack": "Tech stack (comma separated)",
+    "techStackPlaceholder": "Comma separated, e.g. Java, React",
     "status": "Status",
     "sortOrder": "Sort order",
     "published": "Show publicly"

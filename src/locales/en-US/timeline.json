@@ -1,0 +1,9 @@
+{
+  "title": "Title",
+  "date": "Date",
+  "tag": "Tag",
+  "content": "Content",
+  "create": "New event",
+  "edit": "Edit event",
+  "deleteConfirm": "Delete this timeline entry?"
+}

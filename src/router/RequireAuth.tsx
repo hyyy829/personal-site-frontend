@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { Spin } from '@douyinfe/semi-ui';
+import { Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import type { ReactNode } from 'react';
 import { useAuthStore } from '@/stores/auth';
@@ -19,5 +19,10 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
 
 export function AuthChecking() {
   const { t } = useTranslation();
-  return <Spin size="large" style={{ display: 'block', margin: '120px auto' }} tip={t('common.state.loading')} />;
+  return (
+    <div className="site-state" style={{ gap: 'var(--site-space-3)' }}>
+      <Spin size="large" />
+      <span>{t('common.state.loading')}</span>
+    </div>
+  );
 }

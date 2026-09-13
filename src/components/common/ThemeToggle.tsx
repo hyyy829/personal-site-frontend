@@ -1,35 +1,29 @@
-import { Button, Dropdown, Tooltip } from '@douyinfe/semi-ui';
-import { IconMoon, IconSun } from '@douyinfe/semi-icons';
+import { Button, Dropdown, Tooltip } from 'antd';
+import { MoonOutlined, SunOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
-import { useThemeStore } from '@/stores/theme';
+import { useThemeStore, type ThemeMode } from '@/stores/theme';
+
+const MODES: ThemeMode[] = ['light', 'dark', 'system'];
 
 /** 主题切换入口，状态统一由 themeStore 管理（CONSTRAINTS.md 8.1.3） */
 export default function ThemeToggle() {
   const { t } = useTranslation();
   const { mode, resolved, setMode } = useThemeStore();
-
-  const modes = ['light', 'dark', 'system'] as const;
+  const label = t(`common.theme.${mode}`);
 
   return (
     <Dropdown
-      trigger="click"
-      position="bottomRight"
-      render={
-        <Dropdown.Menu>
-          {modes.map((value) => (
-            <Dropdown.Item key={value} active={mode === value} onClick={() => setMode(value)}>
-              {t(`common.theme.${value}`)}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      }
+      trigger={['click']}
+      placement="bottomRight"
+      menu={{
+        items: MODES.map((value) => ({ key: value, label: t(`common.theme.${value}`) })),
+        selectable: true,
+        selectedKeys: [mode],
+        onClick: ({ key }) => setMode(key as ThemeMode),
+      }}
     >
-      <Tooltip content={t(`common.theme.${mode}`)}>
-        <Button
-          theme="borderless"
-          icon={resolved === 'dark' ? <IconMoon size="large" /> : <IconSun size="large" />}
-          aria-label="theme"
-        />
+      <Tooltip title={label}>
+        <Button type="text" icon={resolved === 'dark' ? <MoonOutlined /> : <SunOutlined />} aria-label={label} />
       </Tooltip>
     </Dropdown>
   );

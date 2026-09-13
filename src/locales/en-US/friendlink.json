@@ -1,0 +1,9 @@
+{
+  "name": "Name",
+  "url": "URL",
+  "logoUrl": "Logo URL",
+  "description": "Description",
+  "create": "New friend link",
+  "edit": "Edit friend link",
+  "deleteConfirm": "Delete this friend link?"
+}

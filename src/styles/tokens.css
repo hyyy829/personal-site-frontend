@@ -1,50 +1,138 @@
 /*
- * 设计 Token（CONSTRAINTS.md 8.1.4）：颜色、字体、间距统一从这里取值。
- * 深色模式通过 body[theme-mode='dark'] 切换，与 Semi Design 机制一致。
+ * 设计 Token（CONSTRAINTS.md 8.1.4）：颜色、字体、间距、圆角统一从这里取值。
+ *
+ * 颜色是**唯一出处**：src/styles/antdTheme.ts 会在运行时读取这些 CSS 变量，
+ * 构造 Ant Design ConfigProvider 的主题（token / components），因此新增颜色只改这里。
+ *
+ * 深色模式由 stores/theme.ts 在 <html> 上设置 theme-mode="dark"，
+ * 并在 index.html 内联脚本中提前执行，避免首屏闪白。
  */
 :root {
+  color-scheme: light;
+
+  /* 颜色：主色（克制使用，仅链接 / 主按钮 / 选中态 / 焦点环） */
   --site-color-accent: #4c6ef5;
-  --site-color-accent-hover: #3b5bdb;
-  --site-color-text: #1c1f23;
-  --site-color-text-secondary: #5b6470;
-  --site-color-text-tertiary: #8a919c;
-  --site-color-border: #e4e7ec;
+  --site-color-accent-hover: #4263eb;
+  --site-color-accent-active: #3b5bdb;
+  --site-color-accent-soft: rgba(76, 110, 245, 0.09);
+  --site-color-accent-border: rgba(76, 110, 245, 0.28);
+
+  /* 颜色：文字层级 */
+  --site-color-text: #17191e;
+  --site-color-text-secondary: #555d6b;
+  --site-color-text-tertiary: #868e9c;
+  --site-color-text-inverse: #ffffff;
+
+  /* 颜色：表面 */
   --site-color-bg: #ffffff;
   --site-color-bg-secondary: #f7f8fa;
-  --site-color-bg-code: #f2f3f5;
+  --site-color-bg-elevated: #ffffff;
+  --site-color-bg-hover: #f2f3f6;
+  --site-color-bg-code: #f4f5f7;
+  --site-color-bg-inverse: #17191e;
 
+  /* 颜色：描边与分隔 */
+  --site-color-border: #e7e9ee;
+  --site-color-border-strong: #d6dae1;
+
+  /* 颜色：状态 */
+  --site-color-success: #2f9e44;
+  --site-color-warning: #e8930c;
+  --site-color-danger: #e03131;
+
+  /* 阴影：极轻，优先用描边表达层级（CONSTRAINTS.md 8.2.4 禁止大量阴影） */
+  --site-shadow-sm: 0 1px 2px rgba(16, 20, 32, 0.04);
+  --site-shadow-md: 0 6px 20px rgba(16, 20, 32, 0.07);
+
+  /* 字体 */
   --site-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --site-font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, Menlo, monospace;
+  --site-font-family-mono: 'JetBrains Mono', 'Fira Code', 'SFMono-Regular', Consolas, Menlo, monospace;
   --site-font-size-xs: 12px;
   --site-font-size-sm: 13px;
-  --site-font-size-md: 15px;
-  --site-font-size-lg: 18px;
-  --site-font-size-xl: 24px;
-  --site-font-size-xxl: 34px;
+  --site-font-size-md: 14px;
+  --site-font-size-lg: 16px;
+  --site-font-size-xl: 20px;
+  --site-font-size-xxl: 28px;
+  --site-font-size-display: 40px;
 
+  --site-font-weight-normal: 400;
+  --site-font-weight-medium: 500;
+  --site-font-weight-semibold: 600;
+
+  --site-line-height-tight: 1.25;
+  --site-line-height-base: 1.6;
+  --site-line-height-relaxed: 1.85;
+
+  /* 间距 */
   --site-space-1: 4px;
   --site-space-2: 8px;
   --site-space-3: 12px;
   --site-space-4: 16px;
   --site-space-5: 24px;
   --site-space-6: 32px;
+  --site-space-7: 40px;
   --site-space-8: 48px;
   --site-space-10: 72px;
+  --site-space-12: 96px;
 
-  --site-radius-sm: 4px;
-  --site-radius-md: 8px;
-  --site-content-width: 960px;
+  /* 圆角 */
+  --site-radius-xs: 4px;
+  --site-radius-sm: 6px;
+  --site-radius-md: 10px;
+  --site-radius-lg: 14px;
+  --site-radius-pill: 999px;
+
+  /* 控件高度（antd controlHeight 从这里派生） */
+  --site-control-height-sm: 28px;
+  --site-control-height: 34px;
+  --site-control-height-lg: 40px;
+
+  /* 布局尺寸 */
+  --site-content-width: 1040px;
+  --site-reading-width: 720px;
+  --site-header-height: 64px;
+  --site-admin-sidebar-width: 232px;
+  --site-admin-sidebar-collapsed: 64px;
+  --site-admin-header-height: 60px;
+
+  /* 动效（CONSTRAINTS.md 8.2.4 禁止复杂动画，仅保留状态过渡） */
+  --site-transition-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+  --site-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* 层级 */
+  --site-z-header: 20;
+  --site-z-overlay: 100;
 }
 
-body[theme-mode='dark'] {
+:root[theme-mode='dark'] {
+  color-scheme: dark;
+
   --site-color-accent: #748ffc;
   --site-color-accent-hover: #91a7ff;
-  --site-color-text: #e8eaed;
-  --site-color-text-secondary: #a6adb8;
-  --site-color-text-tertiary: #6f7680;
-  --site-color-border: #33383f;
-  --site-color-bg: #111318;
-  --site-color-bg-secondary: #181b21;
-  --site-color-bg-code: #1f232a;
+  --site-color-accent-active: #a5b7ff;
+  --site-color-accent-soft: rgba(116, 143, 252, 0.16);
+  --site-color-accent-border: rgba(116, 143, 252, 0.36);
+
+  --site-color-text: #e9ebef;
+  --site-color-text-secondary: #a7aebb;
+  --site-color-text-tertiary: #7c8492;
+  --site-color-text-inverse: #14161a;
+
+  --site-color-bg: #0f1116;
+  --site-color-bg-secondary: #15181e;
+  --site-color-bg-elevated: #191d24;
+  --site-color-bg-hover: #21262e;
+  --site-color-bg-code: #1c2129;
+  --site-color-bg-inverse: #e9ebef;
+
+  --site-color-border: #262b33;
+  --site-color-border-strong: #363d47;
+
+  --site-color-success: #51cf66;
+  --site-color-warning: #f0a020;
+  --site-color-danger: #ff6b6b;
+
+  --site-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --site-shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
 }

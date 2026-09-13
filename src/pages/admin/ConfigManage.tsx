@@ -1,17 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Modal, Popconfirm, Table, Toast, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
-import { createConfig, deleteConfig, pageConfigs, updateConfig } from '@/api/system';
-import type { ConfigManagement } from '@/types/system';
+import { App as AntdApp, Button, Form, Input, Modal, Popconfirm, Table } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import PageHeader from '@/components/common/PageHeader';
+import { createConfig, deleteConfig, pageConfigs, updateConfig } from '@/api/config';
+import type { ConfigManagement } from '@/types/config';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const PAGE_SIZE = 20;
 
+interface FormValues {
+  configKey: string;
+  configValue?: string;
+  remark?: string;
+}
+
 /** 系统配置：当前租户的键值对配置维护 */
 export default function ConfigManage() {
   const { t } = useTranslation();
+  const { message } = AntdApp.useApp();
   useDocumentTitle('menu.systemManage');
 
   const canManage = useAuthStore((state) => state.permissions.includes('system:manage'));
@@ -41,11 +49,11 @@ export default function ConfigManage() {
 
   const handleRemove = async (record: ConfigManagement) => {
     await deleteConfig(record.id);
-    Toast.success(t('common.actions.delete'));
+    void message.success(t('common.actions.delete'));
     load(page);
   };
 
-  const handleSubmit = async (values: { configKey: string; configValue?: string; remark?: string }) => {
+  const handleSubmit = async (values: FormValues) => {
     setSaving(true);
     try {
       if (editing) {
@@ -53,17 +61,17 @@ export default function ConfigManage() {
       } else {
         await createConfig(values);
       }
-      Toast.success(t('admin.blog.saved'));
+      void message.success(t('common.actions.saved'));
       setFormVisible(false);
       load(page);
     } catch {
-      // 错误信息已由请求拦截器统一 Toast
+      // 错误信息已由请求拦截器统一提示
     } finally {
       setSaving(false);
     }
   };
 
-  const columns: ColumnProps<ConfigManagement>[] = [
+  const columns: ColumnsType<ConfigManagement> = [
     { title: t('admin.config.key'), dataIndex: 'configKey' },
     { title: t('admin.config.value'), dataIndex: 'configValue', ellipsis: true },
     { title: t('admin.config.remark'), dataIndex: 'remark', ellipsis: true },
@@ -72,7 +80,7 @@ export default function ConfigManage() {
       width: 160,
       render: (_text, record) =>
         canManage && (
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 'var(--site-space-2)' }}>
             <Button
               size="small"
               onClick={() => {
@@ -82,8 +90,13 @@ export default function ConfigManage() {
             >
               {t('common.actions.edit')}
             </Button>
-            <Popconfirm title={t('admin.config.deleteConfirm')} onConfirm={() => void handleRemove(record)}>
-              <Button size="small" type="danger">
+            <Popconfirm
+              title={t('admin.config.deleteConfirm')}
+              okText={t('common.actions.confirm')}
+              cancelText={t('common.actions.cancel')}
+              onConfirm={() => void handleRemove(record)}
+            >
+              <Button size="small" danger>
                 {t('common.actions.delete')}
               </Button>
             </Popconfirm>
@@ -94,43 +107,59 @@ export default function ConfigManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('admin.config.title')}
-        </Typography.Title>
-        {canManage && (
-          <Button
-            theme="solid"
-            onClick={() => {
-              setEditing(null);
-              setFormVisible(true);
-            }}
-          >
-            {t('admin.config.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('admin.config.title')}
+        extra={
+          canManage ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditing(null);
+                setFormVisible(true);
+              }}
+            >
+              {t('admin.config.create')}
+            </Button>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
 
-      <Modal title={editing ? t('admin.config.edit') : t('admin.config.create')} visible={formVisible} onCancel={() => setFormVisible(false)} footer={null}>
-        <Form
+      <Modal
+        title={editing ? t('admin.config.edit') : t('admin.config.create')}
+        open={formVisible}
+        onCancel={() => setFormVisible(false)}
+        footer={null}
+      >
+        <Form<FormValues>
           key={editing?.id ?? 'new'}
-          onSubmit={handleSubmit}
-          initValues={{ configKey: editing?.configKey ?? '', configValue: editing?.configValue ?? '', remark: editing?.remark ?? '' }}
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{
+            configKey: editing?.configKey ?? '',
+            configValue: editing?.configValue ?? '',
+            remark: editing?.remark ?? '',
+          }}
         >
-          <Form.Input field="configKey" label={t('admin.config.key')} disabled={Boolean(editing)} rules={[{ required: !editing }]} />
-          <Form.Input field="configValue" label={t('admin.config.value')} />
-          <Form.Input field="remark" label={t('admin.config.remark')} />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Form.Item name="configKey" label={t('admin.config.key')} rules={[{ required: !editing }]}>
+            <Input disabled={Boolean(editing)} />
+          </Form.Item>
+          <Form.Item name="configValue" label={t('admin.config.value')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="remark" label={t('admin.config.remark')}>
+            <Input />
+          </Form.Item>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--site-space-3)', marginTop: 'var(--site-space-4)' }}>
             <Button onClick={() => setFormVisible(false)}>{t('common.actions.cancel')}</Button>
-            <Button htmlType="submit" theme="solid" type="primary" loading={saving}>
+            <Button type="primary" htmlType="submit" loading={saving}>
               {t('common.actions.confirm')}
             </Button>
           </div>

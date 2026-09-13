@@ -1,18 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Modal, Popconfirm, Table, Tag, Toast, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
-import { adminPageTimeline, createTimeline, deleteTimeline, updateTimeline } from '@/api/content';
-import type { TimelineItem, TimelineUpsertRequest } from '@/types/content';
+import { App as AntdApp, Button, DatePicker, Form, Input, Modal, Popconfirm, Switch, Table, Tag } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
+import PageHeader from '@/components/common/PageHeader';
+import { adminPageTimeline, createTimeline, deleteTimeline, updateTimeline } from '@/api/timeline';
+import type { TimelineItem, TimelineUpsertRequest } from '@/types/timeline';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { formatDate } from '@/utils/date';
 
 const PAGE_SIZE = 10;
 
 interface FormValues {
   title: string;
   content?: string;
-  eventDate: Date;
+  eventDate: Dayjs;
   tag?: string;
   published: boolean;
 }
@@ -20,6 +24,7 @@ interface FormValues {
 /** 时间线管理 */
 export default function TimelineManage() {
   const { t } = useTranslation();
+  const { message } = AntdApp.useApp();
   useDocumentTitle('menu.timelineManage');
 
   const canManage = useAuthStore((state) => state.permissions.includes('timeline:add'));
@@ -52,7 +57,7 @@ export default function TimelineManage() {
     const payload: TimelineUpsertRequest = {
       title: values.title,
       content: values.content,
-      eventDate: values.eventDate.toISOString().slice(0, 10),
+      eventDate: values.eventDate.format('YYYY-MM-DD'),
       tag: values.tag,
       published: values.published,
     };
@@ -63,11 +68,11 @@ export default function TimelineManage() {
       } else {
         await createTimeline(payload);
       }
-      Toast.success(t('admin.blog.saved'));
+      void message.success(t('common.actions.saved'));
       setModalVisible(false);
       load(page);
     } catch {
-      // 错误信息已由请求拦截器统一 Toast
+      // 错误信息已由请求拦截器统一提示
     } finally {
       setSaving(false);
     }
@@ -75,25 +80,26 @@ export default function TimelineManage() {
 
   const handleRemove = async (record: TimelineItem) => {
     await deleteTimeline(record.id);
-    Toast.success(t('common.actions.delete'));
+    void message.success(t('common.actions.delete'));
     load(page);
   };
 
-  const columns: ColumnProps<TimelineItem>[] = [
+  const columns: ColumnsType<TimelineItem> = [
     { title: t('timeline.title'), dataIndex: 'title', ellipsis: true },
-    { title: t('timeline.date'), dataIndex: 'eventDate', width: 130 },
+    { title: t('timeline.date'), dataIndex: 'eventDate', width: 130, render: (value: string) => formatDate(value) },
     { title: t('timeline.tag'), dataIndex: 'tag', width: 120, render: (value: string | null) => (value ? <Tag>{value}</Tag> : '-') },
     {
       title: t('project.field.published'),
       dataIndex: 'published',
       width: 100,
-      render: (value: boolean) => (value ? <Tag color="blue">{t('blog.published')}</Tag> : <Tag color="grey">{t('project.unpublished')}</Tag>),
+      render: (value: boolean) =>
+        value ? <Tag color="blue">{t('blog.published')}</Tag> : <Tag color="default">{t('project.unpublished')}</Tag>,
     },
     {
       title: t('admin.blog.actions'),
       width: 160,
       render: (_text, record) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 'var(--site-space-2)' }}>
           {canManage && (
             <Button
               size="small"
@@ -106,8 +112,13 @@ export default function TimelineManage() {
             </Button>
           )}
           {canDelete && (
-            <Popconfirm title={t('timeline.deleteConfirm')} onConfirm={() => void handleRemove(record)}>
-              <Button size="small" type="danger">
+            <Popconfirm
+              title={t('timeline.deleteConfirm')}
+              okText={t('common.actions.confirm')}
+              cancelText={t('common.actions.cancel')}
+              onConfirm={() => void handleRemove(record)}
+            >
+              <Button size="small" danger>
                 {t('common.actions.delete')}
               </Button>
             </Popconfirm>
@@ -119,51 +130,67 @@ export default function TimelineManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('menu.timelineManage')}
-        </Typography.Title>
-        {canManage && (
-          <Button
-            theme="solid"
-            onClick={() => {
-              setEditing(null);
-              setModalVisible(true);
-            }}
-          >
-            {t('timeline.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('menu.timelineManage')}
+        extra={
+          canManage ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditing(null);
+                setModalVisible(true);
+              }}
+            >
+              {t('timeline.create')}
+            </Button>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
 
-      <Modal title={editing ? t('timeline.edit') : t('timeline.create')} visible={modalVisible} onCancel={() => setModalVisible(false)} footer={null}>
-        <Form
+      <Modal
+        title={editing ? t('timeline.edit') : t('timeline.create')}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+      >
+        <Form<FormValues>
           key={editing?.id ?? 'new'}
-          onSubmit={handleSubmit}
-          initValues={{
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{
             title: editing?.title ?? '',
             content: editing?.content ?? '',
             tag: editing?.tag ?? '',
             published: editing?.published ?? true,
-            eventDate: editing ? new Date(`${editing.eventDate}T00:00:00`) : new Date(),
+            eventDate: editing ? dayjs(editing.eventDate) : dayjs(),
           }}
         >
-          <Form.Input field="title" label={t('timeline.title')} rules={[{ required: true }]} />
-          <Form.TextArea field="content" label={t('timeline.content')} rows={3} />
-          <Form.DatePicker field="eventDate" label={t('timeline.date')} type="date" style={{ width: 240 }} rules={[{ required: true }]} />
-          <Form.Input field="tag" label={t('timeline.tag')} />
-          <Form.Switch field="published" label={t('project.field.published')} />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Form.Item name="title" label={t('timeline.title')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="content" label={t('timeline.content')}>
+            <Input.TextArea rows={3} />
+          </Form.Item>
+          <Form.Item name="eventDate" label={t('timeline.date')} rules={[{ required: true }]}>
+            <DatePicker style={{ width: 240 }} />
+          </Form.Item>
+          <Form.Item name="tag" label={t('timeline.tag')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="published" label={t('project.field.published')} valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--site-space-3)', marginTop: 'var(--site-space-4)' }}>
             <Button onClick={() => setModalVisible(false)}>{t('common.actions.cancel')}</Button>
-            <Button htmlType="submit" theme="solid" type="primary" loading={saving}>
+            <Button type="primary" htmlType="submit" loading={saving}>
               {t('common.actions.confirm')}
             </Button>
           </div>

@@ -1,30 +1,36 @@
-import { Button, Dropdown, Tooltip } from '@douyinfe/semi-ui';
-import { IconLanguage } from '@douyinfe/semi-icons';
+import { Button, Dropdown, Tooltip } from 'antd';
+import { GlobalOutlined } from '@ant-design/icons';
 import { useLocaleStore } from '@/stores/locale';
-import type { Language } from '@/utils/i18n';
+import { SUPPORTED_LANGUAGES, type Language } from '@/utils/i18n';
 
-/** 中英文切换入口 */
+/** 语言名称以该语言自身展示，不参与翻译 */
+const LANGUAGE_LABEL: Record<Language, string> = {
+  'zh-CN': '中文',
+  'en-US': 'English',
+};
+
+/**
+ * 中英文切换入口。
+ * Dropdown 内部是 Tooltip、Tooltip 内部是 Button：rc-trigger 会把 onClick 逐层透传，
+ * 且 Button 转发 ref，因此不会触发 React 18 StrictMode 的 findDOMNode 告警。
+ */
 export default function LanguageToggle() {
   const { language, setLanguage } = useLocaleStore();
-
-  const items: Language[] = ['zh-CN', 'en-US'];
+  const label = LANGUAGE_LABEL[language];
 
   return (
     <Dropdown
-      trigger="click"
-      position="bottomRight"
-      render={
-        <Dropdown.Menu>
-          {items.map((lang) => (
-            <Dropdown.Item key={lang} active={language === lang} onClick={() => setLanguage(lang)}>
-              {lang === 'zh-CN' ? '中文' : 'English'}
-            </Dropdown.Item>
-          ))}
-        </Dropdown.Menu>
-      }
+      trigger={['click']}
+      placement="bottomRight"
+      menu={{
+        items: SUPPORTED_LANGUAGES.map((lang) => ({ key: lang, label: LANGUAGE_LABEL[lang] })),
+        selectable: true,
+        selectedKeys: [language],
+        onClick: ({ key }) => setLanguage(key as Language),
+      }}
     >
-      <Tooltip content={language === 'zh-CN' ? '中文' : 'English'}>
-        <Button theme="borderless" icon={<IconLanguage size="large" />} aria-label="language" />
+      <Tooltip title={label}>
+        <Button type="text" icon={<GlobalOutlined />} aria-label={label} />
       </Tooltip>
     </Dropdown>
   );

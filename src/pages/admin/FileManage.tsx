@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Popconfirm, Table, Tag, Toast, Typography, Upload } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
-import { IconUpload } from '@douyinfe/semi-icons';
-import { deleteFile, pageFiles, uploadFile } from '@/api/infra';
-import type { FileManagement } from '@/types/infra';
+import { App as AntdApp, Button, Popconfirm, Table, Tag, Upload } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { UploadOutlined } from '@ant-design/icons';
+import { deleteFile, pageFiles, uploadFile } from '@/api/file';
+import type { FileManagement } from '@/types/file';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import PageHeader from '@/components/common/PageHeader';
+import { formatDateTime } from '@/utils/date';
 
 const PAGE_SIZE = 10;
 
@@ -15,6 +17,7 @@ export default function FileManage() {
   const { t } = useTranslation();
   useDocumentTitle('menu.fileManage');
 
+  const { message } = AntdApp.useApp();
   const canUpload = useAuthStore((state) => state.permissions.includes('file:upload'));
   const canDelete = useAuthStore((state) => state.permissions.includes('file:delete'));
 
@@ -41,20 +44,20 @@ export default function FileManage() {
 
   const handleRemove = async (record: FileManagement) => {
     await deleteFile(record.id);
-    Toast.success(t('common.actions.delete'));
+    void message.success(t('common.actions.delete'));
     load(page);
   };
 
   const copyUrl = async (record: FileManagement) => {
     try {
       await navigator.clipboard.writeText(record.fileUrl);
-      Toast.success(t('file.copied'));
+      void message.success(t('file.copied'));
     } catch {
-      Toast.warning(record.fileUrl);
+      void message.warning(record.fileUrl);
     }
   };
 
-  const columns: ColumnProps<FileManagement>[] = [
+  const columns: ColumnsType<FileManagement> = [
     { title: t('file.name'), dataIndex: 'fileName', ellipsis: true },
     {
       title: t('file.contentType'),
@@ -68,18 +71,23 @@ export default function FileManage() {
       width: 110,
       render: (value: number) => (value > 1024 * 1024 ? `${(value / 1024 / 1024).toFixed(1)} MB` : `${(value / 1024).toFixed(1)} KB`),
     },
-    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => value?.slice(0, 16).replace('T', ' ') ?? '-' },
+    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => formatDateTime(value) },
     {
       title: t('admin.blog.actions'),
       width: 200,
       render: (_text, record) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 'var(--site-space-2)' }}>
           <Button size="small" onClick={() => void copyUrl(record)}>
             {t('file.copyUrl')}
           </Button>
           {canDelete && (
-            <Popconfirm title={t('file.deleteConfirm')} onConfirm={() => void handleRemove(record)}>
-              <Button size="small" type="danger">
+            <Popconfirm
+              title={t('file.deleteConfirm')}
+              onConfirm={() => void handleRemove(record)}
+              okText={t('common.actions.confirm')}
+              cancelText={t('common.actions.cancel')}
+            >
+              <Button size="small" danger>
                 {t('common.actions.delete')}
               </Button>
             </Popconfirm>
@@ -91,46 +99,45 @@ export default function FileManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('menu.fileManage')}
-        </Typography.Title>
-        {canUpload && (
-          <Upload
-            action=""
-            accept="image/*,.pdf,.txt,.zip"
-            showRetry={false}
-            customRequest={({ fileInstance }) => {
-              if (uploadingRef.current || !(fileInstance instanceof File)) {
-                return;
-              }
-              uploadingRef.current = true;
-              const form = new FormData();
-              form.append('file', fileInstance);
-              uploadFile(form)
-                .then(() => {
-                  Toast.success(t('admin.blog.saved'));
-                  load(page);
-                })
-                .catch(() => undefined)
-                .finally(() => {
-                  uploadingRef.current = false;
-                });
-            }}
-          >
-            <Button theme="solid" icon={<IconUpload />}>
-              {t('file.upload')}
-            </Button>
-          </Upload>
-        )}
-      </div>
+      <PageHeader
+        title={t('menu.fileManage')}
+        extra={
+          canUpload ? (
+            <Upload
+              accept="image/*,.pdf,.txt,.zip"
+              showUploadList={false}
+              customRequest={({ file }) => {
+                if (uploadingRef.current || !(file instanceof File)) {
+                  return;
+                }
+                uploadingRef.current = true;
+                const form = new FormData();
+                form.append('file', file);
+                uploadFile(form)
+                  .then(() => {
+                    void message.success(t('common.actions.saved'));
+                    load(page);
+                  })
+                  .catch(() => undefined)
+                  .finally(() => {
+                    uploadingRef.current = false;
+                  });
+              }}
+            >
+              <Button type="primary" icon={<UploadOutlined />}>
+                {t('file.upload')}
+              </Button>
+            </Upload>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
     </div>
   );

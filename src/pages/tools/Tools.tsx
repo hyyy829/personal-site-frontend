@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Tabs, TextArea, Typography } from '@douyinfe/semi-ui';
+import { Button, Input, Tabs, Typography } from 'antd';
+import PageHeader from '@/components/common/PageHeader';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 interface ToolState {
@@ -11,11 +13,24 @@ interface ToolState {
 
 const INITIAL: ToolState = { input: '', output: '', error: null };
 
-function formatJson(input: string): ToolState {
+/** 输入 / 输出小标题：仅做排版微调，间距取自设计 token */
+const labelStyle: CSSProperties = {
+  display: 'block',
+  marginBottom: 'var(--site-space-2)',
+};
+
+const panelStyle: CSSProperties = {
+  display: 'grid',
+  gap: 'var(--site-space-3)',
+  maxWidth: 'var(--site-reading-width)',
+};
+
+function formatJson(input: string, invalidMessage: string): ToolState {
   try {
     return { input, output: JSON.stringify(JSON.parse(input), null, 2), error: null };
-  } catch (error) {
-    return { input, output: '', error: (error as Error).message };
+  } catch {
+    // 不把浏览器英文报错抛给用户，统一用本地化文案
+    return { input, output: '', error: invalidMessage };
   }
 }
 
@@ -45,76 +60,120 @@ export default function Tools() {
     onInput: (value: string) => void,
     onRun: () => void,
     runLabel: string,
+    outputLabel: string,
   ) => (
-    <div style={{ display: 'grid', gap: 12, maxWidth: 760 }}>
-      <TextArea rows={6} value={state.input} onChange={(value: string) => onInput(value ?? '')} />
+    <div style={panelStyle}>
       <div>
-        <Button theme="solid" onClick={onRun} disabled={!state.input}>
+        <Typography.Text type="secondary" style={labelStyle}>
+          {t('comment.content')}
+        </Typography.Text>
+        <Input.TextArea
+          rows={6}
+          value={state.input}
+          onChange={(event) => onInput(event.target.value)}
+          style={{ fontFamily: 'var(--site-font-family-mono)' }}
+        />
+      </div>
+      <div>
+        <Button type="primary" onClick={onRun} disabled={!state.input}>
           {runLabel}
         </Button>
       </div>
-      {state.error && <Typography.Text type="danger">{state.error}</Typography.Text>}
-      {state.output && <TextArea rows={6} value={state.output} readOnly />}
+      {state.error ? <Typography.Text type="danger">{state.error}</Typography.Text> : null}
+      {state.output ? (
+        <div>
+          <Typography.Text type="secondary" style={labelStyle}>
+            {outputLabel}
+          </Typography.Text>
+          <pre className="site-tool-output">{state.output}</pre>
+        </div>
+      ) : null}
     </div>
   );
 
   return (
-    <div style={{ maxWidth: 800 }}>
-      <h1 className="site-section-title" style={{ fontSize: 'var(--site-font-size-xxl)', margin: 0 }}>
-        {t('common.nav.tools')}
-      </h1>
-      <Typography.Paragraph type="tertiary">{t('tools.subtitle')}</Typography.Paragraph>
+    <div className="site-page">
+      <PageHeader title={t('common.nav.tools')} subtitle={t('tools.subtitle')} />
 
-      <Tabs type="line">
-        <Tabs.TabPane tab={t('tools.json')} itemKey="json">
-          {renderTool(jsonState, (v) => setJsonState({ input: v, output: '', error: null }), () => setJsonState(formatJson(jsonState.input)), t('tools.run'))}
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('tools.base64')} itemKey="base64">
-          {renderTool(
-            base64State,
-            (v) => setBase64State({ input: v, output: '', error: null }),
-            () =>
-              setBase64State(
-                transform(base64State.input, (value) =>
-                  btoa(String.fromCharCode(...new TextEncoder().encode(value))),
+      <Tabs
+        items={[
+          {
+            key: 'json',
+            label: t('tools.json'),
+            children: renderTool(
+              jsonState,
+              (v) => setJsonState({ input: v, output: '', error: null }),
+              () => setJsonState(formatJson(jsonState.input, t('tools.invalidInput'))),
+              t('tools.run'),
+              t('tools.json'),
+            ),
+          },
+          {
+            key: 'base64',
+            label: t('tools.base64'),
+            children: renderTool(
+              base64State,
+              (v) => setBase64State({ input: v, output: '', error: null }),
+              () =>
+                setBase64State(
+                  transform(base64State.input, (value) =>
+                    btoa(String.fromCharCode(...new TextEncoder().encode(value))),
+                  ),
                 ),
-              ),
-            t('tools.encode'),
-          )}
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('tools.timestamp')} itemKey="timestamp">
-          {renderTool(
-            timestampState,
-            (v) => setTimestampState({ input: v, output: '', error: null }),
-            () =>
-              setTimestampState(
-                transform(timestampState.input, (value) => {
-                  try {
-                    const numeric = Number(value);
-                    const date = Number.isFinite(numeric) && value.trim() !== ''
-                      ? new Date(value.includes('-') || value.includes(':') ? value : numeric < 1e12 ? numeric * 1000 : numeric)
-                      : new Date(value);
-                    if (Number.isNaN(date.getTime())) {
+              t('tools.encode'),
+              t('tools.base64'),
+            ),
+          },
+          {
+            key: 'timestamp',
+            label: t('tools.timestamp'),
+            children: renderTool(
+              timestampState,
+              (v) => setTimestampState({ input: v, output: '', error: null }),
+              () =>
+                setTimestampState(
+                  transform(timestampState.input, (value) => {
+                    try {
+                      const numeric = Number(value);
+                      const date = Number.isFinite(numeric) && value.trim() !== ''
+                        ? new Date(value.includes('-') || value.includes(':') ? value : numeric < 1e12 ? numeric * 1000 : numeric)
+                        : new Date(value);
+                      if (Number.isNaN(date.getTime())) {
+                        return t('tools.invalidInput');
+                      }
+                      return `${date.toLocaleString()} (${t('tools.unixLabel')}: ${Math.floor(date.getTime() / 1000)})`;
+                    } catch {
                       return t('tools.invalidInput');
                     }
-                    return `${date.toLocaleString()} (unix: ${Math.floor(date.getTime() / 1000)})`;
-                  } catch {
-                    return t('tools.invalidInput');
-                  }
-                }),
-              ),
-            t('tools.convert'),
-          )}
-        </Tabs.TabPane>
-        <Tabs.TabPane tab={t('tools.uuid')} itemKey="uuid">
-          <div style={{ display: 'grid', gap: 12, maxWidth: 760 }}>
-            <Button theme="solid" onClick={generateUuids}>
-              {t('tools.generate')}
-            </Button>
-            {uuidOutput && <TextArea rows={5} value={uuidOutput} readOnly />}
-          </div>
-        </Tabs.TabPane>
-      </Tabs>
+                  }),
+                ),
+              t('tools.convert'),
+              t('tools.timestamp'),
+            ),
+          },
+          {
+            key: 'uuid',
+            label: t('tools.uuid'),
+            children: (
+              <div style={panelStyle}>
+                <div>
+                  <Button type="primary" onClick={generateUuids}>
+                    {t('tools.generate')}
+                  </Button>
+                </div>
+                {uuidOutput ? (
+                  <div>
+                    <Typography.Text type="secondary" style={labelStyle}>
+                      {t('tools.uuid')}
+                    </Typography.Text>
+                    <pre className="site-tool-output">{uuidOutput}</pre>
+                  </div>
+                ) : null}
+              </div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

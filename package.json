@@ -9,9 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@douyinfe/semi-icons": "^2.80.0",
-    "@douyinfe/semi-ui": "^2.80.0",
+    "@ant-design/icons": "^5.6.1",
+    "antd": "^5.29.3",
     "axios": "^1.11.0",
+    "dayjs": "^1.11.13",
     "dompurify": "^3.2.4",
     "i18next": "^24.2.2",
     "marked": "^15.0.7",

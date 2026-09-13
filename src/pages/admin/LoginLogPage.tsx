@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Table, Tag, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
-import { pageLoginLogs } from '@/api/infra';
-import type { LoginLogManagement } from '@/types/infra';
+import { Table, Tag } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { pageLoginLogs } from '@/api/log';
+import type { LoginLogManagement } from '@/types/log';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import PageHeader from '@/components/common/PageHeader';
+import { formatDateTime } from '@/utils/date';
 
 const PAGE_SIZE = 20;
 
@@ -32,7 +34,7 @@ export default function LoginLogPage() {
     load(page);
   }, [load, page]);
 
-  const columns: ColumnProps<LoginLogManagement>[] = [
+  const columns: ColumnsType<LoginLogManagement> = [
     { title: t('log.username'), dataIndex: 'username', width: 140 },
     { title: t('log.ip'), dataIndex: 'ip', width: 140 },
     {
@@ -43,20 +45,18 @@ export default function LoginLogPage() {
         value === 'success' ? <Tag color="green">{t('log.success')}</Tag> : <Tag color="red">{t('log.failed')}</Tag>,
     },
     { title: t('log.message'), dataIndex: 'message', ellipsis: true },
-    { title: t('log.time'), dataIndex: 'createdAt', width: 160, render: (value: string) => value?.slice(0, 19).replace('T', ' ') ?? '-' },
+    { title: t('log.time'), dataIndex: 'createdAt', width: 160, render: (value: string) => formatDateTime(value) },
   ];
 
   return (
     <div className="site-admin-page">
-      <Typography.Title heading={4} style={{ marginBottom: 16 }}>
-        {t('menu.loginlogManage')}
-      </Typography.Title>
+      <PageHeader title={t('menu.loginlogManage')} />
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
     </div>
   );

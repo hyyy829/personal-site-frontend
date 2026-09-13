@@ -2,5 +2,6 @@
   "subtitle": "Leave your thoughts. Messages appear after moderation.",
   "name": "Name",
   "content": "Message",
-  "submit": "Submit"
+  "submit": "Submit",
+  "submitSuccess": "Message submitted, it will appear after moderation"
 }

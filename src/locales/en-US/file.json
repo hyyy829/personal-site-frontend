@@ -1,0 +1,9 @@
+{
+  "name": "File name",
+  "contentType": "Type",
+  "size": "Size",
+  "upload": "Upload file",
+  "copyUrl": "Copy link",
+  "copied": "Link copied",
+  "deleteConfirm": "Delete this file?"
+}

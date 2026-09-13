@@ -1,0 +1,9 @@
+{
+  "name": "名称",
+  "url": "链接地址",
+  "logoUrl": "Logo 地址",
+  "description": "描述",
+  "create": "新建友链",
+  "edit": "编辑友链",
+  "deleteConfirm": "确定删除这条友链吗？"
+}

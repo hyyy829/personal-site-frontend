@@ -22,11 +22,16 @@ function resolve(mode: ThemeMode): ResolvedTheme {
   return mode;
 }
 
+/**
+ * 深浅色通过 <html theme-mode="dark"> 表达，作为 tokens.css 选择器与 Ant Design 算法的开关。
+ * index.html 内联脚本会提前执行同样的逻辑，避免首屏闪白。
+ */
 function apply(resolved: ResolvedTheme): void {
+  const root = document.documentElement;
   if (resolved === 'dark') {
-    document.body.setAttribute('theme-mode', 'dark');
+    root.setAttribute('theme-mode', 'dark');
   } else {
-    document.body.removeAttribute('theme-mode');
+    root.removeAttribute('theme-mode');
   }
 }
 

@@ -1,0 +1,12 @@
+{
+  "module": "Module",
+  "action": "Action",
+  "username": "Username",
+  "ip": "IP",
+  "status": "Status",
+  "success": "Success",
+  "failed": "Failed",
+  "cost": "Cost",
+  "time": "Time",
+  "message": "Message"
+}

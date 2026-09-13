@@ -11,7 +11,11 @@
     "delete": "Delete",
     "edit": "Edit",
     "create": "New",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "menu": "Menu",
+    "retry": "Retry",
+    "copy": "Copy",
+    "saved": "Saved"
   },
   "theme": { "light": "Light", "dark": "Dark", "system": "System" },
   "footer": { "copyright": "Built with Spring Boot and React" },
@@ -19,6 +23,9 @@
     "loading": "Loading...",
     "empty": "No data yet",
     "notFound": "Page not found or removed",
-    "underConstruction": "This module is under construction, stay tuned"
-  }
+    "error": "Failed to load, please try again",
+    "underConstruction": "This module is under construction, stay tuned",
+    "forbidden": "No permission"
+  },
+  "unit": { "millisecond": "ms" }
 }

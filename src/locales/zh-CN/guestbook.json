@@ -2,5 +2,6 @@
   "subtitle": "欢迎留下你的想法，留言需要审核后展示。",
   "name": "昵称",
   "content": "留言内容",
-  "submit": "提交留言"
+  "submit": "提交留言",
+  "submitSuccess": "留言已提交，审核通过后展示"
 }

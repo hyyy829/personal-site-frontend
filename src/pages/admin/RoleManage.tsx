@@ -1,19 +1,22 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Modal, Popconfirm, Select, Table, Toast, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
+import { App as AntdApp, Button, Form, Input, Modal, Popconfirm, Select, Table, Typography } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import {
   assignRolePermissions,
   createRole,
   deleteRole,
   getRole,
-  pagePermissions,
   pageRoles,
   updateRole,
-} from '@/api/system';
-import type { PermissionManagement, RoleManagement } from '@/types/system';
+} from '@/api/role';
+import { pagePermissions } from '@/api/permission';
+import type { PermissionManagement } from '@/types/permission';
+import type { RoleManagement } from '@/types/role';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import PageHeader from '@/components/common/PageHeader';
+import { formatDate } from '@/utils/date';
 
 const PAGE_SIZE = 10;
 
@@ -22,6 +25,7 @@ export default function RoleManage() {
   const { t } = useTranslation();
   useDocumentTitle('menu.roleManage');
 
+  const { message } = AntdApp.useApp();
   const canManage = useAuthStore((state) => state.permissions.includes('system:manage'));
 
   const [records, setRecords] = useState<RoleManagement[]>([]);
@@ -36,6 +40,7 @@ export default function RoleManage() {
   const [permissionsVisible, setPermissionsVisible] = useState(false);
   const [permissionOptions, setPermissionOptions] = useState<PermissionManagement[]>([]);
   const [selectedPermissionIds, setSelectedPermissionIds] = useState<number[]>([]);
+  const [permissionsSaving, setPermissionsSaving] = useState(false);
 
   const load = useCallback((currentPage: number) => {
     setLoading(true);
@@ -64,14 +69,19 @@ export default function RoleManage() {
     if (!permissionsTarget) {
       return;
     }
-    await assignRolePermissions(permissionsTarget.id, selectedPermissionIds);
-    Toast.success(t('admin.blog.saved'));
-    setPermissionsVisible(false);
+    setPermissionsSaving(true);
+    try {
+      await assignRolePermissions(permissionsTarget.id, selectedPermissionIds);
+      void message.success(t('common.actions.saved'));
+      setPermissionsVisible(false);
+    } finally {
+      setPermissionsSaving(false);
+    }
   };
 
   const handleRemove = async (record: RoleManagement) => {
     await deleteRole(record.id);
-    Toast.success(t('common.actions.delete'));
+    void message.success(t('common.actions.delete'));
     load(page);
   };
 
@@ -83,26 +93,26 @@ export default function RoleManage() {
       } else {
         await createRole(values);
       }
-      Toast.success(t('admin.blog.saved'));
+      void message.success(t('common.actions.saved'));
       setFormVisible(false);
       load(page);
     } catch {
-      // 错误信息已由请求拦截器统一 Toast
+      // 错误信息已由请求拦截器统一提示
     } finally {
       setSaving(false);
     }
   };
 
-  const columns: ColumnProps<RoleManagement>[] = [
+  const columns: ColumnsType<RoleManagement> = [
     { title: t('admin.role.code'), dataIndex: 'code' },
     { title: t('admin.role.name'), dataIndex: 'name' },
-    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => value?.slice(0, 10) ?? '-' },
+    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => formatDate(value) },
     {
       title: t('admin.blog.actions'),
       width: 250,
       render: (_text, record) =>
         canManage && (
-          <div style={{ display: 'flex', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 'var(--site-space-2)' }}>
             <Button
               size="small"
               onClick={() => {
@@ -115,8 +125,13 @@ export default function RoleManage() {
             <Button size="small" onClick={() => void openPermissions(record)}>
               {t('admin.role.permissions')}
             </Button>
-            <Popconfirm title={t('admin.role.deleteConfirm')} onConfirm={() => void handleRemove(record)}>
-              <Button size="small" type="danger">
+            <Popconfirm
+              title={t('admin.role.deleteConfirm')}
+              onConfirm={() => void handleRemove(record)}
+              okText={t('common.actions.confirm')}
+              cancelText={t('common.actions.cancel')}
+            >
+              <Button size="small" danger>
                 {t('common.actions.delete')}
               </Button>
             </Popconfirm>
@@ -127,38 +142,48 @@ export default function RoleManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('admin.role.title')}
-        </Typography.Title>
-        {canManage && (
-          <Button
-            theme="solid"
-            onClick={() => {
-              setEditing(null);
-              setFormVisible(true);
-            }}
-          >
-            {t('admin.role.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('admin.role.title')}
+        extra={
+          canManage ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditing(null);
+                setFormVisible(true);
+              }}
+            >
+              {t('admin.role.create')}
+            </Button>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
 
-      <Modal title={editing ? t('admin.role.edit') : t('admin.role.create')} visible={formVisible} onCancel={() => setFormVisible(false)} footer={null}>
-        <Form key={editing?.id ?? 'new'} onSubmit={handleSubmit} initValues={{ code: editing?.code ?? '', name: editing?.name ?? '' }}>
-          <Form.Input field="code" label={t('admin.role.code')} rules={[{ required: true }]} />
-          <Form.Input field="name" label={t('admin.role.name')} rules={[{ required: true }]} />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+      <Modal
+        title={editing ? t('admin.role.edit') : t('admin.role.create')}
+        open={formVisible}
+        onCancel={() => setFormVisible(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <Form layout="vertical" key={editing?.id ?? 'new'} onFinish={handleSubmit} initialValues={{ code: editing?.code ?? '', name: editing?.name ?? '' }}>
+          <Form.Item name="code" label={t('admin.role.code')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="name" label={t('admin.role.name')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--site-space-3)', marginTop: 'var(--site-space-4)' }}>
             <Button onClick={() => setFormVisible(false)}>{t('common.actions.cancel')}</Button>
-            <Button htmlType="submit" theme="solid" type="primary" loading={saving}>
+            <Button type="primary" htmlType="submit" loading={saving}>
               {t('common.actions.confirm')}
             </Button>
           </div>
@@ -167,18 +192,22 @@ export default function RoleManage() {
 
       <Modal
         title={`${t('admin.role.permissions')} · ${permissionsTarget?.name ?? ''}`}
-        visible={permissionsVisible}
+        open={permissionsVisible}
         onCancel={() => setPermissionsVisible(false)}
         onOk={() => void handlePermissionsSubmit()}
+        okText={t('common.actions.confirm')}
+        cancelText={t('common.actions.cancel')}
+        confirmLoading={permissionsSaving}
       >
         <Typography.Text strong>{t('admin.permission.title')}</Typography.Text>
-        <Select
-          multiple
-          filter
-          style={{ width: '100%', marginTop: 8 }}
+        <Select<number[]>
+          mode="multiple"
+          showSearch
+          optionFilterProp="label"
+          style={{ width: '100%', marginTop: 'var(--site-space-2)' }}
           value={selectedPermissionIds}
-          onChange={(value) => setSelectedPermissionIds(value as number[])}
-          optionList={permissionOptions.map((permission) => ({ value: permission.id, label: `${permission.name} (${permission.code})` }))}
+          onChange={(value) => setSelectedPermissionIds(value)}
+          options={permissionOptions.map((permission) => ({ value: permission.id, label: `${permission.name} (${permission.code})` }))}
         />
       </Modal>
     </div>

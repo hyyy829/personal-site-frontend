@@ -1,6 +1,7 @@
 {
   "title": "Comments",
   "submit": "Submit",
+  "submitSuccess": "Comment submitted, it will appear after moderation",
   "moderationNotice": "Comments appear after moderation.",
   "approve": "Approve",
   "reject": "Reject",

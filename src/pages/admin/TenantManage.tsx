@@ -1,19 +1,27 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Modal, Table, Tag, Toast, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
-import { createTenant, pageTenants, updateTenant } from '@/api/system';
-import type { TenantManagement } from '@/types/system';
+import { App as AntdApp, Button, Form, Input, Modal, Select, Table, Tag } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import { createTenant, pageTenants, updateTenant } from '@/api/tenant';
+import type { TenantManagement } from '@/types/tenant';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import PageHeader from '@/components/common/PageHeader';
+import { formatDate } from '@/utils/date';
 
 const PAGE_SIZE = 10;
+
+const STATUS_OPTIONS = [
+  { value: 1, labelKey: 'admin.user.enabled' },
+  { value: 0, labelKey: 'admin.user.disabled' },
+];
 
 /** 租户管理：平台级租户的创建与启停 */
 export default function TenantManage() {
   const { t } = useTranslation();
   useDocumentTitle('menu.tenantManage');
 
+  const { message } = AntdApp.useApp();
   const canManage = useAuthStore((state) => state.permissions.includes('tenant:manage'));
 
   const [records, setRecords] = useState<TenantManagement[]>([]);
@@ -47,17 +55,17 @@ export default function TenantManage() {
       } else {
         await createTenant({ code: values.code ?? '', name: values.name });
       }
-      Toast.success(t('admin.blog.saved'));
+      void message.success(t('common.actions.saved'));
       setFormVisible(false);
       load(page);
     } catch {
-      // 错误信息已由请求拦截器统一 Toast
+      // 错误信息已由请求拦截器统一提示
     } finally {
       setSaving(false);
     }
   };
 
-  const columns: ColumnProps<TenantManagement>[] = [
+  const columns: ColumnsType<TenantManagement> = [
     { title: t('admin.tenantPage.code'), dataIndex: 'code' },
     { title: t('admin.tenantPage.name'), dataIndex: 'name' },
     {
@@ -66,10 +74,10 @@ export default function TenantManage() {
       width: 100,
       render: (value: number) => (value === 1 ? <Tag color="green">{t('admin.user.enabled')}</Tag> : <Tag color="red">{t('admin.user.disabled')}</Tag>),
     },
-    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => value?.slice(0, 10) ?? '-' },
+    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 150, render: (value: string) => formatDate(value) },
     {
       title: t('admin.blog.actions'),
-      width: 100,
+      width: 110,
       render: (_text, record) =>
         canManage && (
           <Button
@@ -87,48 +95,58 @@ export default function TenantManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('admin.tenantPage.title')}
-        </Typography.Title>
-        {canManage && (
-          <Button
-            theme="solid"
-            onClick={() => {
-              setEditing(null);
-              setFormVisible(true);
-            }}
-          >
-            {t('admin.tenantPage.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('admin.tenantPage.title')}
+        extra={
+          canManage ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditing(null);
+                setFormVisible(true);
+              }}
+            >
+              {t('admin.tenantPage.create')}
+            </Button>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
 
-      <Modal title={editing ? t('admin.tenantPage.edit') : t('admin.tenantPage.create')} visible={formVisible} onCancel={() => setFormVisible(false)} footer={null}>
+      <Modal
+        title={editing ? t('admin.tenantPage.edit') : t('admin.tenantPage.create')}
+        open={formVisible}
+        onCancel={() => setFormVisible(false)}
+        footer={null}
+        destroyOnHidden
+      >
         <Form
+          layout="vertical"
           key={editing?.id ?? 'new'}
-          onSubmit={handleSubmit}
-          initValues={{ code: editing?.code ?? '', name: editing?.name ?? '', status: editing?.status ?? 1 }}
+          onFinish={handleSubmit}
+          initialValues={{ code: editing?.code ?? '', name: editing?.name ?? '', status: editing?.status ?? 1 }}
         >
-          <Form.Input field="code" label={t('admin.tenantPage.code')} disabled={Boolean(editing)} rules={[{ required: !editing }]} />
-          <Form.Input field="name" label={t('admin.tenantPage.name')} rules={[{ required: true }]} />
+          <Form.Item name="code" label={t('admin.tenantPage.code')} rules={[{ required: !editing }]}>
+            <Input disabled={Boolean(editing)} />
+          </Form.Item>
+          <Form.Item name="name" label={t('admin.tenantPage.name')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
           {editing && (
-            <Form.Select field="status" label={t('admin.user.status')} style={{ width: 200 }}>
-              <Form.Select.Option value={1}>{t('admin.user.enabled')}</Form.Select.Option>
-              <Form.Select.Option value={0}>{t('admin.user.disabled')}</Form.Select.Option>
-            </Form.Select>
+            <Form.Item name="status" label={t('admin.user.status')}>
+              <Select options={STATUS_OPTIONS.map((option) => ({ value: option.value, label: t(option.labelKey) }))} />
+            </Form.Item>
           )}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--site-space-3)', marginTop: 'var(--site-space-4)' }}>
             <Button onClick={() => setFormVisible(false)}>{t('common.actions.cancel')}</Button>
-            <Button htmlType="submit" theme="solid" type="primary" loading={saving}>
+            <Button type="primary" htmlType="submit" loading={saving}>
               {t('common.actions.confirm')}
             </Button>
           </div>

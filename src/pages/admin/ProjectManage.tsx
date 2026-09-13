@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, Form, Modal, Popconfirm, Table, Tag, Toast, Typography } from '@douyinfe/semi-ui';
-import type { ColumnProps } from '@douyinfe/semi-ui/lib/es/table';
+import { App as AntdApp, Button, Form, Input, InputNumber, Modal, Popconfirm, Select, Switch, Table, Tag } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
+import PageHeader from '@/components/common/PageHeader';
 import { adminGetProject, adminPageProjects, createProject, deleteProject, updateProject } from '@/api/project';
 import type { ProjectDetail, ProjectSummary, ProjectUpsertRequest } from '@/types/project';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { formatDate } from '@/utils/date';
 
 const PAGE_SIZE = 10;
 
@@ -25,6 +27,7 @@ interface FormValues {
 /** 项目管理：分页列表 + 新建/编辑弹窗 + 删除 */
 export default function ProjectManage() {
   const { t } = useTranslation();
+  const { message } = AntdApp.useApp();
   useDocumentTitle('menu.projectManage');
 
   const permissions = useAuthStore((state) => state.permissions);
@@ -62,7 +65,7 @@ export default function ProjectManage() {
 
   const handleRemove = async (record: ProjectSummary) => {
     await deleteProject(record.id);
-    Toast.success(t('common.actions.delete'));
+    void message.success(t('common.actions.delete'));
     load(page);
   };
 
@@ -75,46 +78,52 @@ export default function ProjectManage() {
       } else {
         await createProject(payload);
       }
-      Toast.success(t('admin.blog.saved'));
+      void message.success(t('common.actions.saved'));
       setModalVisible(false);
       load(page);
     } catch {
-      // 错误信息已由请求拦截器统一 Toast
+      // 错误信息已由请求拦截器统一提示
     } finally {
       setSaving(false);
     }
   };
 
-  const columns: ColumnProps<ProjectSummary>[] = [
+  const columns: ColumnsType<ProjectSummary> = [
     { title: t('project.field.name'), dataIndex: 'name', ellipsis: true },
     {
       title: t('project.field.status'),
       dataIndex: 'status',
       width: 110,
       render: (value: ProjectSummary['status']) =>
-        value === 'active' ? <Tag color="green">{t('project.active')}</Tag> : <Tag color="grey">{t('project.archived')}</Tag>,
+        value === 'active' ? <Tag color="green">{t('project.active')}</Tag> : <Tag color="default">{t('project.archived')}</Tag>,
     },
     {
       title: t('project.field.published'),
       dataIndex: 'published',
       width: 100,
-      render: (value: boolean) => (value ? <Tag color="blue">{t('blog.published')}</Tag> : <Tag color="grey">{t('project.unpublished')}</Tag>),
+      render: (value: boolean) =>
+        value ? <Tag color="blue">{t('blog.published')}</Tag> : <Tag color="default">{t('project.unpublished')}</Tag>,
     },
     { title: t('project.field.sortOrder'), dataIndex: 'sortOrder', width: 90 },
-    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 180, render: (value: string) => value?.slice(0, 10) ?? '-' },
+    { title: t('blog.createdAt'), dataIndex: 'createdAt', width: 180, render: (value: string) => formatDate(value) },
     {
       title: t('admin.blog.actions'),
       width: 160,
       render: (_text, record) => (
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 'var(--site-space-2)' }}>
           {canManage && (
             <Button size="small" onClick={() => void openEdit(record)}>
               {t('common.actions.edit')}
             </Button>
           )}
           {permissions.includes('project:delete') && (
-            <Popconfirm title={t('admin.project.deleteConfirm')} onConfirm={() => void handleRemove(record)}>
-              <Button size="small" type="danger">
+            <Popconfirm
+              title={t('admin.project.deleteConfirm')}
+              okText={t('common.actions.confirm')}
+              cancelText={t('common.actions.cancel')}
+              onConfirm={() => void handleRemove(record)}
+            >
+              <Button size="small" danger>
                 {t('common.actions.delete')}
               </Button>
             </Popconfirm>
@@ -126,42 +135,43 @@ export default function ProjectManage() {
 
   return (
     <div className="site-admin-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Typography.Title heading={4} style={{ margin: 0 }}>
-          {t('admin.project.title')}
-        </Typography.Title>
-        {canManage && (
-          <Button
-            theme="solid"
-            onClick={() => {
-              setEditing(null);
-              setModalVisible(true);
-            }}
-          >
-            {t('admin.project.create')}
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title={t('admin.project.title')}
+        extra={
+          canManage ? (
+            <Button
+              type="primary"
+              onClick={() => {
+                setEditing(null);
+                setModalVisible(true);
+              }}
+            >
+              {t('admin.project.create')}
+            </Button>
+          ) : null
+        }
+      />
 
       <Table
         columns={columns}
         dataSource={records}
         rowKey="id"
         loading={loading}
-        pagination={{ currentPage: page, pageSize: PAGE_SIZE, total, onPageChange: setPage }}
+        pagination={{ current: page, pageSize: PAGE_SIZE, total, onChange: setPage, showSizeChanger: false }}
       />
 
       <Modal
         title={editing ? t('admin.project.edit') : t('admin.project.create')}
-        visible={modalVisible}
+        open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={null}
         width={680}
       >
-        <Form
+        <Form<FormValues>
           key={editing?.id ?? 'new'}
-          onSubmit={handleSubmit}
-          initValues={{
+          layout="vertical"
+          onFinish={handleSubmit}
+          initialValues={{
             name: editing?.name ?? '',
             summary: editing?.summary ?? '',
             description: editing?.description ?? '',
@@ -174,22 +184,45 @@ export default function ProjectManage() {
             published: editing?.published ?? false,
           }}
         >
-          <Form.Input field="name" label={t('project.field.name')} rules={[{ required: true }]} />
-          <Form.Input field="summary" label={t('project.field.summary')} />
-          <Form.TextArea field="description" label={t('project.field.description')} rows={4} />
-          <Form.Input field="repoUrl" label={t('project.field.repoUrl')} />
-          <Form.Input field="demoUrl" label={t('project.field.demoUrl')} />
-          <Form.Input field="coverUrl" label={t('blog.field.coverUrl')} />
-          <Form.Input field="techStack" label={t('project.field.techStack')} placeholder="Java, React" />
-          <Form.Select field="status" label={t('project.field.status')} style={{ width: 200 }}>
-            <Form.Select.Option value="active">{t('project.active')}</Form.Select.Option>
-            <Form.Select.Option value="archived">{t('project.archived')}</Form.Select.Option>
-          </Form.Select>
-          <Form.InputNumber field="sortOrder" label={t('project.field.sortOrder')} style={{ width: 200 }} min={0} max={9999} />
-          <Form.Switch field="published" label={t('project.field.published')} />
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
+          <Form.Item name="name" label={t('project.field.name')} rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="summary" label={t('project.field.summary')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="description" label={t('project.field.description')}>
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item name="repoUrl" label={t('project.field.repoUrl')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="demoUrl" label={t('project.field.demoUrl')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="coverUrl" label={t('blog.field.coverUrl')}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="techStack" label={t('project.field.techStack')}>
+            <Input placeholder={t('project.field.techStackPlaceholder')} />
+          </Form.Item>
+          <Form.Item name="status" label={t('project.field.status')}>
+            <Select
+              style={{ width: 200 }}
+              options={[
+                { value: 'active', label: t('project.active') },
+                { value: 'archived', label: t('project.archived') },
+              ]}
+            />
+          </Form.Item>
+          <Form.Item name="sortOrder" label={t('project.field.sortOrder')}>
+            <InputNumber style={{ width: 200 }} min={0} max={9999} />
+          </Form.Item>
+          <Form.Item name="published" label={t('project.field.published')} valuePropName="checked">
+            <Switch />
+          </Form.Item>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--site-space-3)', marginTop: 'var(--site-space-4)' }}>
             <Button onClick={() => setModalVisible(false)}>{t('common.actions.cancel')}</Button>
-            <Button htmlType="submit" theme="solid" type="primary" loading={saving}>
+            <Button type="primary" htmlType="submit" loading={saving}>
               {t('common.actions.confirm')}
             </Button>
           </div>

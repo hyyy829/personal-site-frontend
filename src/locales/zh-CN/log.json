@@ -1,0 +1,12 @@
+{
+  "module": "模块",
+  "action": "操作",
+  "username": "用户名",
+  "ip": "IP",
+  "status": "状态",
+  "success": "成功",
+  "failed": "失败",
+  "cost": "耗时",
+  "time": "时间",
+  "message": "信息"
+}

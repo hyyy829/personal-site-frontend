@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Spin, Typography } from '@douyinfe/semi-ui';
+import { Skeleton, Typography } from 'antd';
 import { getPost } from '@/api/blog';
 import type { BlogDetail } from '@/types/blog';
 import MarkdownView from '@/components/blog/MarkdownView';
 import CommentSection from '@/components/blog/CommentSection';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import { formatDate } from '@/utils/date';
 
 /** 博客详情：Markdown 渲染 */
 export default function BlogDetailPage() {
@@ -39,29 +40,38 @@ export default function BlogDetailPage() {
   }, [post, t]);
 
   if (loading) {
-    return <Spin size="large" style={{ display: 'block', margin: '96px auto' }} />;
+    return <Skeleton active paragraph={{ rows: 8 }} />;
   }
 
   if (!post) {
     return (
-      <div style={{ textAlign: 'center', padding: '96px 0' }}>
-        <Typography.Title heading={4}>{t('common.state.notFound')}</Typography.Title>
-        <Link to="/blog">{t('common.actions.back')}</Link>
+      <div className="site-empty">
+        <div style={{ textAlign: 'center' }}>
+          <Typography.Title level={4} style={{ marginBottom: 'var(--site-space-3)' }}>
+            {t('common.state.notFound')}
+          </Typography.Title>
+          <Link to="/blog">{t('common.actions.back')}</Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <article>
+    <article className="site-article">
       <header className="site-article-header">
         <h1 className="site-article-title">{post.title}</h1>
         <div className="site-article-meta">
-          {post.publishedAt && <span>{t('blog.publishedAt')} {post.publishedAt.slice(0, 10)}</span>}
+          {post.publishedAt && (
+            <span>
+              {t('blog.publishedAt')} {formatDate(post.publishedAt)}
+            </span>
+          )}
           <span>
             {post.viewCount} {t('blog.views')}
           </span>
         </div>
       </header>
+      {post.coverUrl && <img className="site-article-cover" src={post.coverUrl} alt={post.title} loading="lazy" />}
       <MarkdownView content={post.content} />
       <CommentSection postId={post.id} />
     </article>

@@ -1,12 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Card, Descriptions, Spin, Typography } from '@douyinfe/semi-ui';
+import { Button, Descriptions, Spin } from 'antd';
 import { adminPagePosts } from '@/api/blog';
-import { getTopPaths, getVisitSummary } from '@/api/infra';
-import type { TopPath, VisitSummary } from '@/types/infra';
+import { getTopPaths, getVisitSummary } from '@/api/stats';
+import type { TopPath, VisitSummary } from '@/types/stats';
 import { useAuthStore } from '@/stores/auth';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
+import PageHeader from '@/components/common/PageHeader';
+
+/** 单个指标卡：标签走次要色，数值使用 token 字号，加载中保持占位 */
+function MetricCard({ label, loading, children }: { label: ReactNode; loading: boolean; children?: ReactNode }) {
+  return (
+    <div className="site-card">
+      <div className="site-meta">{label}</div>
+      {loading ? (
+        <div style={{ marginTop: 'var(--site-space-3)' }}>
+          <Spin />
+        </div>
+      ) : (
+        <div
+          style={{
+            fontSize: 'var(--site-font-size-xxl)',
+            fontWeight: 'var(--site-font-weight-semibold)',
+            lineHeight: 'var(--site-line-height-tight)',
+            marginTop: 'var(--site-space-2)',
+          }}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
 
 /** 后台首页：会话信息 + 博客统计 + 访问统计 + 快捷入口 */
 export default function Dashboard() {
@@ -31,56 +57,82 @@ export default function Dashboard() {
   }, [canViewStats]);
 
   const currentTenant = tenants.find((tenant) => tenant.id === currentTenantId);
+  const unitStyle = {
+    fontSize: 'var(--site-font-size-md)',
+    fontWeight: 'var(--site-font-weight-normal)',
+    color: 'var(--site-color-text-tertiary)',
+  } as const;
 
   return (
     <div className="site-admin-page">
-      <Typography.Title heading={4}>{t('admin.dashboard.title')}</Typography.Title>
-      <Typography.Paragraph type="tertiary">{t('admin.dashboard.welcome', { name: user.nickname || user.username })}</Typography.Paragraph>
+      <PageHeader
+        title={t('admin.dashboard.title')}
+        subtitle={t('admin.dashboard.welcome', { name: user.nickname || user.username })}
+      />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
-        <Card title={t('admin.dashboard.blogTotal')}>
-          {blogTotal === null ? (
-            <Spin />
-          ) : (
-            <Typography.Title heading={2} style={{ margin: 0 }}>
-              {blogTotal}
-            </Typography.Title>
-          )}
-        </Card>
-        <Card title={t('admin.dashboard.visits')}>
-          {visitSummary === null ? (
-            <Spin />
-          ) : (
-            <Typography.Title heading={2} style={{ margin: 0 }}>
-              {visitSummary.total} <Typography.Text type="tertiary" size="small">({t('admin.dashboard.today')} {visitSummary.today})</Typography.Text>
-            </Typography.Title>
-          )}
-        </Card>
-        <Card title={t('admin.dashboard.tenant')}>
-          <Descriptions
-            data={[
-              { key: t('admin.tenantLabel'), value: currentTenant ? `${currentTenant.name} (#${currentTenant.id})` : currentTenantId },
-              { key: t('common.siteName'), value: user.username },
-            ]}
-          />
-        </Card>
-        <Card title={t('admin.dashboard.quickLinks')}>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            <Button theme="solid" onClick={() => navigate('/admin/blog')}>
+      <div className="site-grid">
+        <MetricCard label={t('admin.dashboard.blogTotal')} loading={blogTotal === null}>
+          {blogTotal}
+          <span style={{ ...unitStyle, marginLeft: 'var(--site-space-1)' }}>{t('admin.dashboard.postUnit')}</span>
+        </MetricCard>
+
+        <MetricCard label={t('admin.dashboard.visits')} loading={visitSummary === null}>
+          {visitSummary?.total}
+          <span style={{ ...unitStyle, marginLeft: 'var(--site-space-2)' }}>
+            ({t('admin.dashboard.today')} {visitSummary?.today})
+          </span>
+        </MetricCard>
+
+        <div className="site-card">
+          <div className="site-meta">{t('admin.dashboard.tenant')}</div>
+          <div style={{ marginTop: 'var(--site-space-3)' }}>
+            <Descriptions
+              size="small"
+              column={1}
+              colon={false}
+              items={[
+                {
+                  key: 'tenant',
+                  label: t('admin.tenantLabel'),
+                  children: currentTenant ? `${currentTenant.name} (#${currentTenant.id})` : currentTenantId,
+                },
+                { key: 'user', label: t('common.siteName'), children: user.username },
+              ]}
+            />
+          </div>
+        </div>
+
+        <div className="site-card">
+          <div className="site-meta">{t('admin.dashboard.quickLinks')}</div>
+          <div style={{ display: 'flex', gap: 'var(--site-space-3)', flexWrap: 'wrap', marginTop: 'var(--site-space-4)' }}>
+            <Button type="primary" onClick={() => navigate('/admin/blog')}>
               {t('admin.dashboard.goBlog')}
             </Button>
             <Button onClick={() => navigate('/admin/system')}>{t('admin.dashboard.goSystem')}</Button>
           </div>
-        </Card>
+        </div>
+
         {canViewStats && topPaths.length > 0 && (
-          <Card title={t('admin.dashboard.topPaths')} style={{ gridColumn: '1 / -1' }}>
-            {topPaths.map((item) => (
-              <div key={item.path} style={{ display: 'flex', justifyContent: 'space-between', padding: '4px 0' }}>
-                <Typography.Text>{item.path}</Typography.Text>
-                <Typography.Text type="tertiary">{item.count}</Typography.Text>
-              </div>
-            ))}
-          </Card>
+          <div className="site-card" style={{ gridColumn: '1 / -1' }}>
+            <div className="site-meta">{t('admin.dashboard.topPaths')}</div>
+            <div style={{ marginTop: 'var(--site-space-3)' }}>
+              {topPaths.map((item) => (
+                <div
+                  key={item.path}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 'var(--site-space-4)',
+                    padding: 'var(--site-space-2) 0',
+                  }}
+                >
+                  <span style={{ color: 'var(--site-color-text-secondary)' }}>{item.path}</span>
+                  <span style={{ color: 'var(--site-color-text-tertiary)', fontSize: 'var(--site-font-size-sm)' }}>{item.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </div>

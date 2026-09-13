@@ -37,7 +37,9 @@
     "create": "新建用户",
     "edit": "编辑用户",
     "roles": "分配角色",
-    "resetPassword": "重置密码"
+    "resetPassword": "重置密码",
+    "operatorPassword": "你的登录密码",
+    "operatorPasswordHint": "重置他人密码属敏感操作，需输入你自己的登录密码进行二次校验"
   },
   "role": {
     "title": "角色管理",
@@ -51,7 +53,17 @@
   "permission": {
     "title": "权限管理",
     "code": "权限编码",
+    "codePlaceholder": "模块:动作，例如 blog:view",
     "name": "权限名称",
+    "menuType": "菜单类型",
+    "menuTypeMenu": "菜单",
+    "menuTypeButton": "按钮",
+    "parentCode": "父级编码",
+    "routePath": "路由路径",
+    "icon": "图标",
+    "nameKey": "名称国际化 Key",
+    "sortOrder": "排序",
+    "visible": "显示",
     "create": "新建权限",
     "edit": "编辑权限",
     "deleteConfirm": "删除权限会同时清理角色关联，确定吗？"

@@ -1,6 +1,7 @@
 {
   "title": "评论区",
   "submit": "提交评论",
+  "submitSuccess": "评论已提交，审核通过后展示",
   "moderationNotice": "评论提交后需审核通过才会展示。",
   "approve": "通过",
   "reject": "驳回",

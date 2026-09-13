@@ -37,7 +37,9 @@
     "create": "New user",
     "edit": "Edit user",
     "roles": "Assign roles",
-    "resetPassword": "Reset password"
+    "resetPassword": "Reset password",
+    "operatorPassword": "Your password",
+    "operatorPasswordHint": "Resetting another user's password is sensitive — confirm with your own password."
   },
   "role": {
     "title": "Role management",
@@ -51,7 +53,17 @@
   "permission": {
     "title": "Permission management",
     "code": "Permission code",
+    "codePlaceholder": "module:action, e.g. blog:view",
     "name": "Permission name",
+    "menuType": "Menu type",
+    "menuTypeMenu": "Menu",
+    "menuTypeButton": "Button",
+    "parentCode": "Parent code",
+    "routePath": "Route path",
+    "icon": "Icon",
+    "nameKey": "Name i18n key",
+    "sortOrder": "Sort order",
+    "visible": "Visible",
     "create": "New permission",
     "edit": "Edit permission",
     "deleteConfirm": "Deleting a permission also clears role relations. Continue?"

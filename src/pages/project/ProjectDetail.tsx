@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button, Spin, Tag, Typography } from '@douyinfe/semi-ui';
-import { IconGithubLogo, IconLink } from '@douyinfe/semi-icons';
+import { Button, Skeleton, Tag, Typography } from 'antd';
+import { GithubOutlined, LinkOutlined } from '@ant-design/icons';
+import PageHeader from '@/components/common/PageHeader';
 import { getProject } from '@/api/project';
 import type { ProjectDetail } from '@/types/project';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -38,50 +39,57 @@ export default function ProjectDetailPage() {
   }, [project, t]);
 
   if (loading) {
-    return <Spin size="large" style={{ display: 'block', margin: '96px auto' }} />;
+    return <Skeleton active paragraph={{ rows: 6 }} />;
   }
 
   if (!project) {
     return (
-      <div style={{ textAlign: 'center', padding: '96px 0' }}>
-        <Typography.Title heading={4}>{t('common.state.notFound')}</Typography.Title>
-        <Link to="/project">{t('common.actions.back')}</Link>
+      <div className="site-empty">
+        <div style={{ textAlign: 'center' }}>
+          <Typography.Title level={4} style={{ marginBottom: 'var(--site-space-3)' }}>
+            {t('common.state.notFound')}
+          </Typography.Title>
+          <Link to="/project">{t('common.actions.back')}</Link>
+        </div>
       </div>
     );
   }
 
-  const techTags = (project.techStack || '').split(',').map((item) => item.trim()).filter(Boolean);
+  const techTags = (project.techStack || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 
   return (
-    <article style={{ maxWidth: 720 }}>
-      <h1 className="site-article-title">{project.name}</h1>
-      {project.summary && (
-        <Typography.Paragraph type="tertiary" style={{ fontSize: 'var(--site-font-size-lg)' }}>
-          {project.summary}
-        </Typography.Paragraph>
-      )}
+    <article className="site-article">
+      <PageHeader title={project.name} subtitle={project.summary} />
+
+      {project.coverUrl && <img className="site-article-cover" src={project.coverUrl} alt={project.name} loading="lazy" />}
+
       {techTags.length > 0 && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: 'var(--site-space-4) 0' }}>
+        <div className="site-tag-list" style={{ marginBottom: 'var(--site-space-5)' }}>
           {techTags.map((tag) => (
-            <Tag key={tag} color="white" type="light">
+            <Tag key={tag} color="default">
               {tag}
             </Tag>
           ))}
         </div>
       )}
+
       {project.description && (
-        <Typography.Paragraph style={{ lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+        <Typography.Paragraph style={{ color: 'var(--site-color-text-secondary)', lineHeight: 'var(--site-line-height-relaxed)', whiteSpace: 'pre-wrap' }}>
           {project.description}
         </Typography.Paragraph>
       )}
-      <div style={{ display: 'flex', gap: 12, marginTop: 'var(--site-space-5)' }}>
+
+      <div className="site-page-extra" style={{ marginTop: 'var(--site-space-6)' }}>
         {project.repoUrl && (
-          <Button theme="solid" icon={<IconGithubLogo />} onClick={() => window.open(project.repoUrl ?? '', '_blank')}>
+          <Button type="primary" icon={<GithubOutlined />} href={project.repoUrl} target="_blank" rel="noreferrer">
             {t('project.source')}
           </Button>
         )}
         {project.demoUrl && (
-          <Button icon={<IconLink />} onClick={() => window.open(project.demoUrl ?? '', '_blank')}>
+          <Button icon={<LinkOutlined />} href={project.demoUrl} target="_blank" rel="noreferrer">
             {t('project.demo')}
           </Button>
         )}

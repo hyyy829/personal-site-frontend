@@ -5,6 +5,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Personal Site</title>
+    <script>
+      // 与 stores/theme.ts 保持一致：渲染前确定深浅色，避免首屏闪白
+      (function () {
+        try {
+          var mode = localStorage.getItem('site-theme') || 'system';
+          var dark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) {
+            document.documentElement.setAttribute('theme-mode', 'dark');
+          }
+        } catch (error) {
+          /* 隐私模式下 localStorage 不可用，回退到浅色 */
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

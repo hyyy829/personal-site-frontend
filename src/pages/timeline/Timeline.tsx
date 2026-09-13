@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Empty, Pagination, Spin, Tag, Typography } from '@douyinfe/semi-ui';
-import { pageTimeline } from '@/api/content';
-import type { TimelineItem } from '@/types/content';
+import { Empty, Pagination, Skeleton, Tag } from 'antd';
+import PageHeader from '@/components/common/PageHeader';
+import { pageTimeline } from '@/api/timeline';
+import type { TimelineItem } from '@/types/timeline';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const PAGE_SIZE = 20;
@@ -28,50 +29,34 @@ export default function TimelinePage() {
   }, [page]);
 
   return (
-    <div style={{ maxWidth: 720 }}>
-      <h1 className="site-section-title" style={{ fontSize: 'var(--site-font-size-xxl)', margin: 0 }}>
-        {t('common.nav.timeline')}
-      </h1>
+    <div>
+      <PageHeader title={t('common.nav.timeline')} />
 
       {loading ? (
-        <Spin size="large" style={{ display: 'block', margin: '96px auto' }} />
+        <Skeleton active paragraph={{ rows: 6 }} />
       ) : items.length === 0 ? (
-        <div style={{ padding: 'var(--site-space-10) 0' }}>
-          <Empty title={<Typography.Text type="tertiary">{t('common.state.empty')}</Typography.Text>} />
+        <div className="site-empty">
+          <Empty description={t('common.state.empty')} />
         </div>
       ) : (
-        <div style={{ marginTop: 'var(--site-space-6)', position: 'relative', paddingLeft: 24, borderLeft: '2px solid var(--site-color-border)' }}>
+        <div className="site-timeline">
           {items.map((item) => (
-            <div key={item.id} style={{ position: 'relative', paddingBottom: 'var(--site-space-6)' }}>
-              <span
-                style={{
-                  position: 'absolute',
-                  left: -31,
-                  top: 6,
-                  width: 10,
-                  height: 10,
-                  borderRadius: '50%',
-                  background: 'var(--site-color-accent)',
-                }}
-              />
-              <div className="site-post-item-meta" style={{ marginTop: 0 }}>
-                <span>{item.eventDate}</span>
-                {item.tag && <Tag size="small" color="white" type="light">{item.tag}</Tag>}
+            <div key={item.id} className="site-timeline-item">
+              <span className="site-timeline-dot" aria-hidden="true" />
+              <div className="site-meta">
+                <span className="site-timeline-date">{item.eventDate}</span>
+                {item.tag && <Tag color="default">{item.tag}</Tag>}
               </div>
-              <div className="site-post-item-title" style={{ marginTop: 4 }}>{item.title}</div>
-              {item.content && (
-                <Typography.Paragraph type="tertiary" style={{ marginTop: 4 }}>
-                  {item.content}
-                </Typography.Paragraph>
-              )}
+              <h3 className="site-timeline-title">{item.title}</h3>
+              {item.content && <p className="site-timeline-content">{item.content}</p>}
             </div>
           ))}
         </div>
       )}
 
       {total > PAGE_SIZE && (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <Pagination total={total} pageSize={PAGE_SIZE} currentPage={page} onPageChange={setPage} />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 'var(--site-space-6)' }}>
+          <Pagination total={total} pageSize={PAGE_SIZE} current={page} onChange={setPage} />
         </div>
       )}
     </div>

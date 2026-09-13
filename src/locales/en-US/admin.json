@@ -5,6 +5,9 @@
     "blogTotal": "Total posts",
     "postUnit": "",
     "tenant": "Current tenant",
+    "visits": "Site visits",
+    "today": "today",
+    "topPaths": "Top paths",
     "quickLinks": "Quick links",
     "goBlog": "Write a post",
     "goSystem": "System settings"

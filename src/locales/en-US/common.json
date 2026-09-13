@@ -1,7 +1,7 @@
 {
   "siteName": "Personal Site",
   "siteTagline": "A personal digital platform that keeps evolving",
-  "nav": { "home": "Home", "blog": "Blog", "project": "Projects", "about": "About" },
+  "nav": { "home": "Home", "blog": "Blog", "project": "Projects", "timeline": "Timeline", "tools": "Tools", "guestbook": "Guestbook", "about": "About" },
   "actions": {
     "more": "Read more",
     "back": "Back",

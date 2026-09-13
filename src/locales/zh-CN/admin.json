@@ -5,6 +5,9 @@
     "blogTotal": "博客总数",
     "postUnit": "篇",
     "tenant": "当前租户",
+    "visits": "站点访问",
+    "today": "今日",
+    "topPaths": "热门路径 TOP 5",
     "quickLinks": "快捷入口",
     "goBlog": "去写博客",
     "goSystem": "系统管理"

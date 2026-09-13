@@ -2,9 +2,15 @@
   "dashboard": "仪表盘",
   "blogManage": "博客管理",
   "projectManage": "项目管理",
+  "commentManage": "评论管理",
+  "friendlinkManage": "友链管理",
+  "timelineManage": "时间线管理",
+  "fileManage": "文件管理",
   "userManage": "用户管理",
   "roleManage": "角色管理",
   "permissionManage": "权限管理",
   "tenantManage": "租户管理",
-  "systemManage": "系统设置"
+  "systemManage": "系统设置",
+  "operationlogManage": "操作日志",
+  "loginlogManage": "登录日志"
 }

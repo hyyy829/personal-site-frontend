@@ -65,13 +65,16 @@ pnpm preview    # 本地预览构建产物
 ## 7. 路由结构
 
 ```text
-前台：/  /blog  /blog/:id  /project  /about
-后台：/login  /admin  /admin/blog  /admin/project
-      /admin/user  /admin/role  /admin/permission  /admin/tenant  /admin/system
+前台：/  /blog  /blog/:id  /project  /project/:id  /timeline  /tools  /guestbook  /about  /search
+后台：/login  /admin  /admin/blog  /admin/project  /admin/comment  /admin/friendlink
+      /admin/timeline  /admin/file  /admin/user  /admin/role  /admin/permission
+      /admin/tenant  /admin/system  /admin/operation-log  /admin/login-log
 ```
 
 - 后台菜单按 `/api/auth/me` 返回的权限码过滤（体验层），接口权限由后端 `@SaCheckPermission` 最终校验。
-- `user/role/permission/tenant/system/project` 为 Phase 1 骨架占位页（后端表结构已就绪），按分期在 Phase 2 实现完整功能。
+- 前台路由切换时自动上报访问统计（`POST /api/stats/visit`，仅路径聚合计数）。
+- `/tools` 为纯前端小工具（JSON 格式化 / Base64 / 时间戳 / UUID），数据不出浏览器。
+- 文件管理依赖 MinIO/OSS：对象存储未启动时上传返回统一错误码 50001。
 
 ## 8. 主题与国际化
 

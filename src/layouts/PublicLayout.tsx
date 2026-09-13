@@ -1,22 +1,32 @@
-import { Suspense } from 'react';
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Suspense, useEffect } from 'react';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Spin } from '@douyinfe/semi-ui';
+import { Button, Spin } from '@douyinfe/semi-ui';
+import { IconSearch } from '@douyinfe/semi-icons';
 import ThemeToggle from '@/components/common/ThemeToggle';
 import LanguageToggle from '@/components/common/LanguageToggle';
+import { reportVisit } from '@/api/infra';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 const NAV_ITEMS = [
   { to: '/', key: 'common.nav.home' },
   { to: '/blog', key: 'common.nav.blog' },
   { to: '/project', key: 'common.nav.project' },
+  { to: '/timeline', key: 'common.nav.timeline' },
+  { to: '/tools', key: 'common.nav.tools' },
+  { to: '/guestbook', key: 'common.nav.guestbook' },
   { to: '/about', key: 'common.nav.about' },
 ];
 
-/** 前台布局：顶部导航 + 内容 + 页脚 */
+/** 前台布局：顶部导航 + 内容 + 页脚；路由切换时上报访问统计 */
 export default function PublicLayout() {
   const { t } = useTranslation();
+  const location = useLocation();
   useDocumentTitle();
+
+  useEffect(() => {
+    void reportVisit(location.pathname).catch(() => undefined);
+  }, [location.pathname]);
 
   return (
     <div className="site-public">
@@ -33,6 +43,9 @@ export default function PublicLayout() {
             ))}
           </nav>
           <div className="site-header-actions">
+            <Link to="/search" aria-label={t('search.title')}>
+              <Button theme="borderless" icon={<IconSearch size="large" />} />
+            </Link>
             <LanguageToggle />
             <ThemeToggle />
           </div>

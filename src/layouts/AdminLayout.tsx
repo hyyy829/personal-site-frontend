@@ -13,11 +13,17 @@ const ADMIN_MENUS = [
   { itemKey: '/admin', labelKey: 'menu.dashboard', permission: null },
   { itemKey: '/admin/blog', labelKey: 'menu.blogManage', permission: 'blog:view' },
   { itemKey: '/admin/project', labelKey: 'menu.projectManage', permission: 'project:view' },
+  { itemKey: '/admin/comment', labelKey: 'menu.commentManage', permission: 'comment:view' },
+  { itemKey: '/admin/friendlink', labelKey: 'menu.friendlinkManage', permission: 'friendlink:view' },
+  { itemKey: '/admin/timeline', labelKey: 'menu.timelineManage', permission: 'timeline:view' },
+  { itemKey: '/admin/file', labelKey: 'menu.fileManage', permission: 'file:view' },
   { itemKey: '/admin/user', labelKey: 'menu.userManage', permission: 'system:view' },
   { itemKey: '/admin/role', labelKey: 'menu.roleManage', permission: 'system:view' },
   { itemKey: '/admin/permission', labelKey: 'menu.permissionManage', permission: 'system:view' },
   { itemKey: '/admin/tenant', labelKey: 'menu.tenantManage', permission: 'tenant:manage' },
   { itemKey: '/admin/system', labelKey: 'menu.systemManage', permission: 'system:view' },
+  { itemKey: '/admin/operation-log', labelKey: 'menu.operationlogManage', permission: 'operationlog:view' },
+  { itemKey: '/admin/login-log', labelKey: 'menu.loginlogManage', permission: 'loginlog:view' },
 ];
 
 /** 后台布局：侧边菜单 + 顶栏（租户切换 / 用户 / 主题 / 语言） */

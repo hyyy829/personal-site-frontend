@@ -1,7 +1,7 @@
 {
   "siteName": "个人站点",
   "siteTagline": "一个可持续演进的个人数字平台",
-  "nav": { "home": "首页", "blog": "博客", "project": "项目", "about": "关于" },
+  "nav": { "home": "首页", "blog": "博客", "project": "项目", "timeline": "时间线", "tools": "工具箱", "guestbook": "留言", "about": "关于" },
   "actions": {
     "more": "查看更多",
     "back": "返回",

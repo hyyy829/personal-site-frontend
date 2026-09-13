@@ -1,0 +1,12 @@
+{
+  "subtitle": "纯本地运行的常用小工具，数据不会上传。",
+  "run": "运行",
+  "encode": "编码",
+  "convert": "转换",
+  "generate": "生成 5 个",
+  "invalidInput": "无法解析的输入",
+  "json": "JSON 格式化",
+  "base64": "Base64",
+  "timestamp": "时间戳",
+  "uuid": "UUID"
+}

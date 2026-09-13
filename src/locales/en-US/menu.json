@@ -2,9 +2,15 @@
   "dashboard": "Dashboard",
   "blogManage": "Blog",
   "projectManage": "Projects",
+  "commentManage": "Comments",
+  "friendlinkManage": "Friend links",
+  "timelineManage": "Timeline",
+  "fileManage": "Files",
   "userManage": "Users",
   "roleManage": "Roles",
   "permissionManage": "Permissions",
   "tenantManage": "Tenants",
-  "systemManage": "System"
+  "systemManage": "System",
+  "operationlogManage": "Operation logs",
+  "loginlogManage": "Login logs"
 }

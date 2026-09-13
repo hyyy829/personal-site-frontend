@@ -12,3 +12,6 @@ logs/
 .vscode/*
 !.vscode/extensions.json
 .DS_Store
+
+# 工具本地状态
+.mimosa/

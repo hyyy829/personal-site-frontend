@@ -1,0 +1,19 @@
+{
+  "source": "Source",
+  "demo": "Live demo",
+  "active": "Active",
+  "archived": "Archived",
+  "published": "Published",
+  "unpublished": "Unpublished",
+  "field": {
+    "name": "Name",
+    "summary": "Summary",
+    "description": "Description",
+    "repoUrl": "Repository URL",
+    "demoUrl": "Demo URL",
+    "techStack": "Tech stack (comma separated)",
+    "status": "Status",
+    "sortOrder": "Sort order",
+    "published": "Show publicly"
+  }
+}

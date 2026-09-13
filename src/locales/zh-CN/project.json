@@ -1,0 +1,19 @@
+{
+  "source": "源码",
+  "demo": "在线演示",
+  "active": "进行中",
+  "archived": "已归档",
+  "published": "已发布",
+  "unpublished": "未发布",
+  "field": {
+    "name": "项目名称",
+    "summary": "简介",
+    "description": "详细介绍",
+    "repoUrl": "仓库地址",
+    "demoUrl": "演示地址",
+    "techStack": "技术栈（逗号分隔）",
+    "status": "状态",
+    "sortOrder": "排序",
+    "published": "公开展示"
+  }
+}

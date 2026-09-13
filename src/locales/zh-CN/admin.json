@@ -17,11 +17,57 @@
     "saved": "已保存",
     "actions": "操作"
   },
-  "tenantLabel": "租户",
-  "user": { "title": "用户管理" },
-  "role": { "title": "角色管理" },
-  "permission": { "title": "权限管理" },
-  "system": { "title": "系统设置" },
-  "project": { "title": "项目管理" },
-  "tenantPage": { "title": "租户管理" }
+  "project": {
+    "title": "项目管理",
+    "create": "新建项目",
+    "edit": "编辑项目",
+    "deleteConfirm": "确定删除这个项目吗？"
+  },
+  "user": {
+    "title": "用户管理",
+    "username": "用户名",
+    "nickname": "昵称",
+    "email": "邮箱",
+    "status": "状态",
+    "enabled": "启用",
+    "disabled": "禁用",
+    "create": "新建用户",
+    "edit": "编辑用户",
+    "roles": "分配角色",
+    "resetPassword": "重置密码"
+  },
+  "role": {
+    "title": "角色管理",
+    "code": "角色编码",
+    "name": "角色名称",
+    "permissions": "分配权限",
+    "create": "新建角色",
+    "edit": "编辑角色",
+    "deleteConfirm": "删除角色会同时清理用户与权限关联，确定吗？"
+  },
+  "permission": {
+    "title": "权限管理",
+    "code": "权限编码",
+    "name": "权限名称",
+    "create": "新建权限",
+    "edit": "编辑权限",
+    "deleteConfirm": "删除权限会同时清理角色关联，确定吗？"
+  },
+  "tenantPage": {
+    "title": "租户管理",
+    "code": "租户编码",
+    "name": "租户名称",
+    "create": "新建租户",
+    "edit": "编辑租户"
+  },
+  "config": {
+    "title": "系统设置",
+    "key": "配置键",
+    "value": "配置值",
+    "remark": "备注",
+    "create": "新建配置",
+    "edit": "编辑配置",
+    "deleteConfirm": "确定删除这条配置吗？"
+  },
+  "tenantLabel": "租户"
 }

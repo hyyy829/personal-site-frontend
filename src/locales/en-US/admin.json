@@ -17,11 +17,57 @@
     "saved": "Saved",
     "actions": "Actions"
   },
-  "tenantLabel": "Tenant",
-  "user": { "title": "User management" },
-  "role": { "title": "Role management" },
-  "permission": { "title": "Permission management" },
-  "system": { "title": "System settings" },
-  "project": { "title": "Project management" },
-  "tenantPage": { "title": "Tenant management" }
+  "project": {
+    "title": "Project management",
+    "create": "New project",
+    "edit": "Edit project",
+    "deleteConfirm": "Delete this project?"
+  },
+  "user": {
+    "title": "User management",
+    "username": "Username",
+    "nickname": "Nickname",
+    "email": "Email",
+    "status": "Status",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "create": "New user",
+    "edit": "Edit user",
+    "roles": "Assign roles",
+    "resetPassword": "Reset password"
+  },
+  "role": {
+    "title": "Role management",
+    "code": "Role code",
+    "name": "Role name",
+    "permissions": "Assign permissions",
+    "create": "New role",
+    "edit": "Edit role",
+    "deleteConfirm": "Deleting a role also clears its user and permission relations. Continue?"
+  },
+  "permission": {
+    "title": "Permission management",
+    "code": "Permission code",
+    "name": "Permission name",
+    "create": "New permission",
+    "edit": "Edit permission",
+    "deleteConfirm": "Deleting a permission also clears role relations. Continue?"
+  },
+  "tenantPage": {
+    "title": "Tenant management",
+    "code": "Tenant code",
+    "name": "Tenant name",
+    "create": "New tenant",
+    "edit": "Edit tenant"
+  },
+  "config": {
+    "title": "System settings",
+    "key": "Key",
+    "value": "Value",
+    "remark": "Remark",
+    "create": "New config",
+    "edit": "Edit config",
+    "deleteConfirm": "Delete this config entry?"
+  },
+  "tenantLabel": "Tenant"
 }
